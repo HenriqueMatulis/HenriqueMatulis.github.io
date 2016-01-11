@@ -1,0 +1,12 @@
+html{
+    overflow: hidden;
+}
+body{
+    overflow: hidden;
+    background:grey;
+}
+#myCanvas {
+    vertical-align: top;
+    height:100%;
+    width:100%;
+}
