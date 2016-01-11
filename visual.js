@@ -179,8 +179,8 @@ function collision(ball1, ball2, timeStep){
 var balls = [];
 var i,z;
 var timeScale=1;
-for(i=0;i<2;i+=1){
-    balls.push(new Ball(500 + i*200 ,500,30, 1e22));
+for(i=0;i<5;i+=1){
+    balls.push(new Ball(500 + 500*Math.sin(i*Math.PI / 2.5) ,500 + 500*Math.cos(i*Math.PI / 2.5),30, 1e22));
     //balls[i].velocity.x=5 - i/10;
 }
 
