@@ -184,7 +184,14 @@ for(i=0;i<5;i+=1){
     balls.push(new Ball(500 + 500*Math.sin(i*Math.PI / 2.5) ,500 + 500*Math.cos(i*Math.PI / 2.5),5 *(1+i), (1+i*i) * 1e20));
 }
 
-
+document.onmouseup = function(){
+	var v;
+	var mouseX = event.clientX;
+	var mouseY = event.clientY;
+	for(v=0;v<balls.length;v+=1){
+		if(
+	}
+}
 //frame is basically a while loop
 var frame= function(){
     "use strict";
