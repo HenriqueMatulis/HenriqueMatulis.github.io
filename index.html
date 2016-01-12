@@ -4,7 +4,42 @@
     <link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
-    <script src="visual.js"></script>
+    <!-- <canvas id="myCanvas"></canvas>
+    <script src="visual.js"></script> -->
+    <div class="menu">
+    <p id="title">Global Options (not functional)</p>
+        <div class="group">
+            <!-- use onblur="/" to undo unsubmitted changes-->
+            <form onsubmit="">
+            <p class = "decription">Timescale per step</p>
+            <input id = "timescale" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"  />
+            </form>
+            <form>
+            <p class = "decription">Steps per frame (Integer Value)</p>
+            <input id = "steps" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            </form>
+            <form>
+            <p class = "decription">Scale (how many meters equal one pixel)</p>
+            <input id = "scale" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            </form>
+        </div>
+        <p id="title">Selection Options</p>
+        <div>
+            <p class = "decription"> mass</p>
+            <input id = "mass" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            <p class = "decription"> radius</p>
+            <input id = "radius" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            
+            <p class = "decription"> x location</p>
+            <input id = "x" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            <p class = "decription"> y location</p>
+            <input id = "y" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            
+            <p class = "decription">x velocity</p>
+            <input id = "vx" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            <p class = "decription">y velocity</p>
+            <input id = "vy" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+        </div>
+    </div>
 </body>
 </HTML>

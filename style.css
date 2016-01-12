@@ -3,10 +3,46 @@ html{
 }
 body{
     overflow: hidden;
-    background:grey;
+    background: black;
 }
 #myCanvas {
     vertical-align: top;
     height:100%;
-    width:100%;
+    width:85%;
+     z-index:-1; 
 }
+
+
+
+.menu{
+    overflow-y: auto;
+    background: lightblue;
+    width:15%;
+    height:100%;
+    z-index:1; 
+    position:absolute; 
+    right:0%; 
+    top:0%;
+    text-align: center;
+}
+#title{
+    font-family: times, Times New Roman, times-roman, georgia, serif;
+	color: #444;
+	margin: 0;
+	padding: 0px 0px 6px 0px;
+	font-size: 24px;
+	line-height: 44px;
+	letter-spacing: -2px;
+	font-weight: bold;
+}
+.decription{
+    font-size:16px;
+    text-align: left;
+}
+
+.group{
+}
+
+
+
+

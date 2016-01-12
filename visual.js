@@ -1,4 +1,4 @@
-/*jslint white: true, nomen: true, vars: true*/
+/*jslint white: true, eqeq: true, nomen: true, vars: true*/
 var animate = window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
   window.mozRequestAnimationFrame ||
@@ -178,10 +178,10 @@ function collision(ball1, ball2, timeStep){
 //do setup stuff here
 var balls = [];
 var i,z;
+var selected= -1;
 var timeScale=1;
 for(i=0;i<5;i+=1){
-    balls.push(new Ball(500 + 500*Math.sin(i*Math.PI / 2.5) ,500 + 500*Math.cos(i*Math.PI / 2.5),30, 1e22));
-    //balls[i].velocity.x=5 - i/10;
+    balls.push(new Ball(500 + 500*Math.sin(i*Math.PI / 2.5) ,500 + 500*Math.cos(i*Math.PI / 2.5),5 *(1+i), (1+i*i) * 1e20));
 }
 
 
@@ -202,15 +202,23 @@ var frame= function(){
             collision(balls[i], balls[z], timeScale);
         }
     }
-    
     for(i=0;i<balls.length;i+=1){
         balls[i].update(timeScale);
-        balls[i].render();
     }
-    //ball.location.add(new Vector(0,1));
+    
+    for(i=0;i<balls.length;i+=1){
+        balls[i].render();
+        if(i == selected){
+            //ball is selected
+            balls[i].render();
+        }
+    }
     animate(frame);
 };
 
+function select(){
+    "use strict";
+}
 
 window.onload = function() {
    "use strict";
