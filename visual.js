@@ -8,8 +8,8 @@ var animate = window.requestAnimationFrame ||
   };
 
 var canvas= document.getElementById("myCanvas");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+canvas.width= window.innerWidth * 0.85;
+canvas.height=window.innerHeight ;
 var context = canvas.getContext("2d");
 
 function Vector(xx, yy){
@@ -84,23 +84,29 @@ function Ball(xx,yy, rad, m){
     this.force=new Vector(0,0);
     this.radius=rad;
     this.mass=m;
-    this.render= function(){
+    this.render= function(s){
         context.fillStyle = "#FFFFFF";
         context.beginPath();
-        context.arc(this.location.x, this.location.y,this.radius, 0, 2*Math.PI);
+        context.arc(this.location.x/s, this.location.y/s,this.radius/s, 0, 2*Math.PI);
+        context.fill();
+    };
+    this.selected= function(s){
+        context.fillStyle = "rgb(0, 255, 255)";
+        context.beginPath();
+        context.arc(this.location.x/s, this.location.y/s,this.radius/s + 2, 0, 2*Math.PI);
         context.fill();
     };
     
-    this.update= function(timeStep){
-        this.acceleration.x = this.force.x / (this.mass * 600000);
-        this.acceleration.y = this.force.y / (this.mass * 600000);
+    this.update= function(tS){
+        this.acceleration.x = this.force.x / (this.mass);
+        this.acceleration.y = this.force.y / (this.mass);
         
         this.force.x = this.force.y = 0;
         
-        this.location.x += (this.velocity.x * timeStep) + ((this.acceleration.x * timeStep * timeStep) / 2);
-		this.velocity.x += (this.acceleration.x * timeStep);
-		this.location.y += (this.velocity.y * timeStep) + ((this.acceleration.y * timeStep * timeStep) / 2);
-		this.velocity.y += (this.acceleration.y * timeStep);
+        this.location.x += (this.velocity.x * tS) + ((this.acceleration.x * tS * tS) / 2);
+		this.velocity.x += (this.acceleration.x * tS);
+		this.location.y += (this.velocity.y * tS) + ((this.acceleration.y * tS * tS) / 2);
+		this.velocity.y += (this.acceleration.y * tS);
     };
     
 }
@@ -111,9 +117,9 @@ function gravity(ball1, ball2){
     var diff= ball1.location.sub2(ball1.location, ball2.location);
 
     var distance = diff.mag();
-    distance*=600000;
+   // distance*=600000; values already in meters if using scale
     
-    var attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (distance);
+    var attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (distance * distance);
     diff.normalize();
     
     ball1.force.x +=(attraction * -diff.x);
@@ -177,48 +183,114 @@ function collision(ball1, ball2, timeStep){
 }
 //do setup stuff here
 var balls = [];
-var i,z;
+var i,z, s;
 var selected= -1;
 var timeScale=1;
-for(i=0;i<5;i+=1){
-    balls.push(new Ball(500 + 500*Math.sin(i*Math.PI / 2.5) ,500 + 500*Math.cos(i*Math.PI / 2.5),5 *(1+i), (1+i*i) * 1e20));
+var timeSteps=1;
+var scale = 600000;
+balls.push(new Ball(scale * 500 ,scale * 500,scale * 63, 1e24));
+balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20));
+balls[1].velocity.y = 471.66372201672100474412475024634;
+balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1));
+//balls[2].velocity.x = 14.915316512453454021963870146151;
+balls[2].velocity.y = 490.91931283543591058403099911566;
+
+function refresh(id){
+    "use strict";
+    if(id == 'mass'){
+        document.getElementById('mass').value = balls[selected].mass;
+    }else if(id == 'radius'){
+        document.getElementById('radius').value = balls[selected].radius;
+    }else if(id == 'x'){
+        document.getElementById('x').value = balls[selected].location.x;
+    }else if(id == 'y'){
+        document.getElementById('y').value = balls[selected].location.y;
+    }else if(id == 'vx'){
+        document.getElementById('vx').value = balls[selected].velocity.x;
+    }else if(id == 'vy'){
+        document.getElementById('vy').value = balls[selected].velocity.y;
+    }else if(id =='timescale'){
+        document.getElementById(id).value = timeScale;
+    }else if(id =='steps'){
+        document.getElementById(id).value = timeSteps;
+    }else if(id =='scale'){
+        document.getElementById(id).value = scale;
+    }
+}
+document.onmouseup = function(event){
+    "use strict";
+    var v;
+	for(v=0;v<balls.length;v+=1){
+		if(Math.sqrt((event.clientX - balls[v].location.x/scale) * (event.clientX - balls[v].location.x/scale) + (event.clientY - balls[v].location.y/scale) * (event.clientY - balls[v].location.y/scale)) < balls[v].radius/scale + 2){
+            if(selected === v){
+                selected = -1;
+                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
+                
+            }else{
+                selected = v;
+                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = false;
+                refresh('mass');
+                refresh('radius');
+                refresh('x');
+                refresh('y');
+                refresh('vx');
+                refresh('vy');
+            }
+            break;
+        }
+	}
+};
+
+function uInput(id){
+    "use strict";
+    if(id == "timescale"){
+        timeScale=parseFloat(document.getElementById(id).value);
+    }else if(id =="steps"){
+        timeSteps=parseFloat(document.getElementById(id).value);
+    }else if(id =="scale"){
+        scale=parseFloat(document.getElementById(id).value);
+    }else if(id =="mass"){
+        balls[selected].mass=parseFloat(document.getElementById(id).value);
+    }else if(id =="radius"){
+        balls[selected].radius=parseFloat(document.getElementById(id).value);
+    }else if(id =="x"){
+        balls[selected].location.x=parseFloat(document.getElementById(id).value);
+    }else if(id =="y"){
+        balls[selected].location.y=parseFloat(document.getElementById(id).value);
+    }else if(id =="vx"){
+        balls[selected].velocity.x=parseFloat(document.getElementById(id).value);
+    }else if(id =="vy"){
+        balls[selected].velocity.y=parseFloat(document.getElementById(id).value);
+    }
 }
 
-document.onmouseup = function(){
-	var v;
-	var mouseX = event.clientX;
-	var mouseY = event.clientY;
-	for(v=0;v<balls.length;v+=1){
-		if(
-	}
-}
 //frame is basically a while loop
 var frame= function(){
     "use strict";
+    for(s=0;s<timeSteps;s+=1){
+        for(i=0;i<balls.length-1; i+=1){
+            for(z=(i+1);z<balls.length;z+=1){
+                gravity(balls[i], balls[z]);
+            }
+        }
+    
+        for(i=0;i<balls.length-1; i+=1){
+            for(z=(i+1);z<balls.length;z+=1){
+                collision(balls[i], balls[z], timeScale);
+            }
+        }
+        for(i=0;i<balls.length;i+=1){
+            balls[i].update(timeScale);
+        }
+    }
     context.fillStyle = "#000000";
     context.fillRect(0,0,canvas.width, canvas.height);
-    
-    for(i=0;i<balls.length-1; i+=1){
-        for(z=(i+1);z<balls.length;z+=1){
-            gravity(balls[i], balls[z]);
-        }
-    }
-    
-    for(i=0;i<balls.length-1; i+=1){
-        for(z=(i+1);z<balls.length;z+=1){
-            collision(balls[i], balls[z], timeScale);
-        }
-    }
     for(i=0;i<balls.length;i+=1){
-        balls[i].update(timeScale);
-    }
-    
-    for(i=0;i<balls.length;i+=1){
-        balls[i].render();
         if(i == selected){
             //ball is selected
-            balls[i].render();
+            balls[i].selected(scale);
         }
+        balls[i].render(scale);
     }
     animate(frame);
 };

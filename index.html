@@ -1,44 +1,44 @@
 <HTML>
 <head>
     <title>Graaaaaaaavity</title>
-    <link href="style.css" rel="stylesheet" type="text/css">
+    <link href='style.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
-     <canvas id="myCanvas"></canvas>
-    <script src="visual.js"></script> 
-    <div class="menu">
-    <p id="title">Global Options (not functional)</p>
-        <div class="group">
-            <!-- use onblur="/" to undo unsubmitted changes-->
-            <form onsubmit="">
-            <p class = "decription">Timescale per step</p>
-            <input id = "timescale" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"  />
-            </form>
-            <form>
-            <p class = "decription">Steps per frame (Integer Value)</p>
-            <input id = "steps" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            </form>
-            <form>
-            <p class = "decription">Scale (how many meters equal one pixel)</p>
-            <input id = "scale" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            </form>
+     <canvas id='myCanvas'></canvas>
+    <script src='visual.js'></script> 
+    <div class='menu'>
+    <p id='title'>Global Options</p>
+        <div class='group'>
+            <!-- use onblur='/' to undo unsubmitted changes-->
+            <p class = 'decription'>Timescale per step</p>
+            <input id = 'timescale' value='1' type='number' onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
+                
+            <p class = 'decription'>Steps per frame (Integer Value)</p>
+            <input id = 'steps' value='1' type='number' onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
+                
+            <p class = 'decription'>Scale (how many meters equal one pixel)</p>
+            <input id = 'scale' value='600000' type='number' onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
         </div>
-        <p id="title">Selection Options</p>
+        <p id='title'>Selection Options</p>
         <div>
-            <p class = "decription"> mass</p>
-            <input id = "mass" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            <p class = "decription"> radius</p>
-            <input id = "radius" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
             
-            <p class = "decription"> x location</p>
-            <input id = "x" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            <p class = "decription"> y location</p>
-            <input id = "y" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            
-            <p class = "decription">x velocity</p>
-            <input id = "vx" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
-            <p class = "decription">y velocity</p>
-            <input id = "vy" type="number" onkeyup="if (event.keyCode == 13) { this.form.submit(); return false; }"/>
+            <p class = 'decription'> mass</p>
+            <input id = 'mass' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off' onblur='refresh("mass")'/>
+                
+            <p class = 'decription'> radius</p>
+            <input id = 'radius' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off' onblur='refresh("radius")'/>
+                
+            <p class = 'decription'> x location</p>
+            <input id = 'x' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off' onblur='refresh("x")'/>
+                
+            <p class = 'decription'> y location</p>
+            <input id = 'y' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off' onblur='refresh("y")'/>
+                
+            <p class = 'decription'>x velocity</p>
+            <input id = 'vx' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off' onblur='refresh("vx")'/>
+                
+            <p class = 'decription'>y velocity</p>
+            <input id = 'vy' disabled type='number' onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off' onblur='refresh("vy")'/>
         </div>
     </div>
 </body>
