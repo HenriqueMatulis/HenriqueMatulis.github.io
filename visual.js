@@ -193,7 +193,7 @@ balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20));
 balls[1].velocity.y = 471.66372201672100474412475024634;
 balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1));
 //balls[2].velocity.x = 14.915316512453454021963870146151;
-balls[2].velocity.y = 490.91931283543591058403099911566;
+//balls[2].velocity.y = 490.91931283543591058403099911566;
 
 function refresh(id){
     "use strict";
