@@ -73,6 +73,7 @@ function Vector(xx, yy){
         v.div(s);
         return v;
     };
+    
 }
 
 
@@ -84,17 +85,31 @@ function Ball(xx,yy, rad, m){
     this.force=new Vector(0,0);
     this.radius=rad;
     this.mass=m;
+    this.r=0;
+    this.g=0;
+    this.b=0;
     this.render= function(s){
         context.fillStyle = "#FFFFFF";
         context.beginPath();
         context.arc(this.location.x/s, this.location.y/s,this.radius/s, 0, 2*Math.PI);
         context.fill();
     };
-    this.selected= function(s){
+    this.selected= function(s, tS){
         context.fillStyle = "rgb(0, 255, 255)";
         context.beginPath();
         context.arc(this.location.x/s, this.location.y/s,this.radius/s + 2, 0, 2*Math.PI);
         context.fill();
+        
+        //draw velocity vector
+        var r = new Vector(this.velocity.x, this.velocity.y);
+        r.normalize();
+        r.mult(this.radius + 2);
+        context.strokeStyle = "rgb(0, 255, 255)";
+        context.beginPath();
+        context.moveTo(this.location.x / s, this.location.y / s);
+        context.lineTo((r.x + this.location.x + this.velocity.x * tS * 60)/s, (r.y + this.location.y + this.velocity.y * tS * 60)/s);
+        context.stroke();
+        
     };
     
     this.update= function(tS){
@@ -185,8 +200,8 @@ function collision(ball1, ball2, timeStep){
 var balls = [];
 var i,z, s;
 var selected= -1;
-var timeScale=1;
-var timeSteps=1;
+var timeScale=10;
+var timeSteps=50;
 var scale = 600000;
 balls.push(new Ball(scale * 500 ,scale * 500,scale * 63, 1e24));
 balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20));
@@ -197,24 +212,25 @@ balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1));
 
 function refresh(id){
     "use strict";
+    
     if(id == 'mass'){
-        document.getElementById('mass').value = balls[selected].mass;
+        document.getElementById('mass').value = balls[selected].mass.toExponential();
     }else if(id == 'radius'){
-        document.getElementById('radius').value = balls[selected].radius;
+        document.getElementById('radius').value = balls[selected].radius.toExponential();
     }else if(id == 'x'){
-        document.getElementById('x').value = balls[selected].location.x;
+        document.getElementById('x').value = balls[selected].location.x.toExponential();
     }else if(id == 'y'){
-        document.getElementById('y').value = balls[selected].location.y;
+        document.getElementById('y').value = balls[selected].location.y.toExponential();
     }else if(id == 'vx'){
-        document.getElementById('vx').value = balls[selected].velocity.x;
+        document.getElementById('vx').value = balls[selected].velocity.x.toExponential();
     }else if(id == 'vy'){
-        document.getElementById('vy').value = balls[selected].velocity.y;
+        document.getElementById('vy').value = balls[selected].velocity.y.toExponential();
     }else if(id =='timescale'){
         document.getElementById(id).value = timeScale;
     }else if(id =='steps'){
         document.getElementById(id).value = timeSteps;
     }else if(id =='scale'){
-        document.getElementById(id).value = scale;
+        document.getElementById(id).value = scale.toExponential();
     }
 }
 document.onmouseup = function(event){
@@ -285,19 +301,17 @@ var frame= function(){
     }
     context.fillStyle = "#000000";
     context.fillRect(0,0,canvas.width, canvas.height);
+    if(selected!=-1){
+        balls[selected].selected(scale, timeScale * timeSteps);
+    }
     for(i=0;i<balls.length;i+=1){
-        if(i == selected){
-            //ball is selected
-            balls[i].selected(scale);
-        }
         balls[i].render(scale);
     }
+    
     animate(frame);
 };
 
-function select(){
-    "use strict";
-}
+
 
 window.onload = function() {
    "use strict";
