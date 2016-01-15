@@ -74,6 +74,13 @@ function Vector(xx, yy){
         return v;
     };
     
+    this.rotate=function(angle){
+        var xx=this.x;
+        var yy=this.y;
+        this.x = xx * Math.cos(angle) - yy * Math.sin(angle);
+        this.y = yy * Math.cos(angle) + xx * Math.sin(angle);
+    };
+    
 }
 
 
@@ -106,8 +113,17 @@ function Ball(xx,yy, rad, m){
         r.mult(this.radius + 2);
         context.strokeStyle = "rgb(0, 255, 255)";
         context.beginPath();
+        var tox = (r.x + this.location.x + this.velocity.x * tS * 60)/s;
+        var toy = (r.y + this.location.y + this.velocity.y * tS * 60)/s;
         context.moveTo(this.location.x / s, this.location.y / s);
-        context.lineTo((r.x + this.location.x + this.velocity.x * tS * 60)/s, (r.y + this.location.y + this.velocity.y * tS * 60)/s);
+        context.lineTo(tox, toy);
+        r.normalize();
+        r.mult(1.2 * this.radius/s);
+        r.rotate(Math.PI + Math.PI /4);
+        context.lineTo(tox + r.x, toy + r.y);
+        r.rotate(-Math.PI /2);
+        context.moveTo(tox, toy);
+        context.lineTo(tox +r.x, toy +r.y);
         context.stroke();
         
     };
@@ -299,8 +315,10 @@ var frame= function(){
             balls[i].update(timeScale);
         }
     }
-    context.fillStyle = "#000000";
-    context.fillRect(0,0,canvas.width, canvas.height);
+    if(!document.getElementById('trace').checked){
+        context.fillStyle = "#000000";
+        context.fillRect(0,0,canvas.width, canvas.height);
+    }
     if(selected!=-1){
         balls[selected].selected(scale, timeScale * timeSteps);
     }
