@@ -1,4 +1,6 @@
 /*jslint white: true, eqeq: true, nomen: true, vars: true*/
+
+//set up canvas animation
 var animate = window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
   window.mozRequestAnimationFrame ||
@@ -6,74 +8,89 @@ var animate = window.requestAnimationFrame ||
     "use strict";
     window.setTimeout(callback, 1000/60); 
   };
-
 var canvas= document.getElementById("myCanvas");
 canvas.width= window.innerWidth * 0.85;
 canvas.height=window.innerHeight ;
 var context = canvas.getContext("2d");
 
+/** 
+Vector class, the functions that end in 2 accept 2 input vectors
+*/
 function Vector(xx, yy){
     "use strict";
     this.x=xx;
     this.y=yy;
-    
+    /**
+    Add a vector to this one
+    */
     this.add=function(vector){
         this.x+=vector.x;
         this.y+=vector.y;
     };
+    //Add two vectors
     this.add2=function(v1, v2){
         var v = new Vector(v1.x, v1.y);
         v.add(v2);
         return v;
     };
     
+    //subtract a vector from this vector
     this.sub=function(v1){
         this.x-=v1.x;
         this.y-=v1.y;
     };
     
+    //subtract second vector from first vector
     this.sub2=function(v1, v2){
         var v = new Vector(v1.x, v1.y);
         v.sub(v2);
         return v;
     };
     
+    // get magnitude of this vector
     this.mag=function(){
         return Math.sqrt(this.x*this.x + this.y*this.y);
     };
     
+    //normalize this vector
     this.normalize=function(){
         var m= this.mag();
         this.x=this.x/m;
         this.y=this.y/m;
     };
     
+    //find dot product between this and another vector
     this.dot=function(vector){
         return (this.x* vector.x +this.y*vector.y);
     };
     
+    //multiply this vector by a scalar
     this.mult=function(scalar){
         this.x*=scalar;
         this.y*=scalar;
     };
     
+    //multiply a vector by a scalar
     this.mult2=function(v1, s){
         var v = new Vector(v1.x, v1.y);
         v.mult(s);
         return v;
     };
     
+    //divide this vector by a scaler
     this.div=function(scalar){
         this.x/=scalar;
         this.y/=scalar;
     };
     
+    //divide a vector by a scaler
     this.div2=function(v1, s){
         var v = new Vector(v1.x, v1.y);
         v.div(s);
         return v;
     };
     
+    //rotate a vector by input angle, in radians
     this.rotate=function(angle){
         var xx=this.x;
         var yy=this.y;
@@ -83,28 +100,39 @@ function Vector(xx, yy){
     
 }
 
-
-function Ball(xx,yy, rad, m){
+//Ball class contains data for all physics objects
+function Ball(xx,yy, rad, m, r_, g_, b_){
     "use strict";
     this.location=new Vector(xx,yy);
     this.velocity=new Vector(0,0);
     this.acceleration=new Vector(0,0);
+    //force vector is reset every frame, can't use it to accelerate an object
     this.force=new Vector(0,0);
     this.radius=rad;
     this.mass=m;
-    this.r=0;
-    this.g=0;
-    this.b=0;
-    this.render= function(s){
-        context.fillStyle = "#FFFFFF";
+    //color
+    this.r=r_;
+    this.g=g_;
+    this.b=b_;
+    //render the ball
+    this.render= function(s, f){
+        //s=scale, fx= focusx, fy=focusy
+        context.fillStyle = "rgb("+this.r+","+this.g+","+ this.b+")";
         context.beginPath();
-        context.arc(this.location.x/s, this.location.y/s,this.radius/s, 0, 2*Math.PI);
+        var x_ = canvas.width/2 + (this.location.x - f.x)/s;
+        var y_ = canvas.height/2 + (this.location.y - f.y)/s;
+        context.arc(x_,y_,this.radius/s, 0, 2*Math.PI);
         context.fill();
     };
-    this.selected= function(s, tS){
+    
+    //render the balls selected outline, and its velocity vector
+    this.selected= function(s, tS, f){
+        
         context.fillStyle = "rgb(0, 255, 255)";
         context.beginPath();
-        context.arc(this.location.x/s, this.location.y/s,this.radius/s + 2, 0, 2*Math.PI);
+        var x_ = canvas.width/2 + (this.location.x - f.x)/s;
+        var y_ = canvas.height/2 + (this.location.y - f.y)/s;
+        context.arc(x_, y_,this.radius/s + 2, 0, 2*Math.PI);
         context.fill();
         
         //draw velocity vector
@@ -113,9 +141,9 @@ function Ball(xx,yy, rad, m){
         r.mult(this.radius + 2);
         context.strokeStyle = "rgb(0, 255, 255)";
         context.beginPath();
-        var tox = (r.x + this.location.x + this.velocity.x * tS * 60)/s;
-        var toy = (r.y + this.location.y + this.velocity.y * tS * 60)/s;
-        context.moveTo(this.location.x / s, this.location.y / s);
+        var tox = (r.x/s + x_ + this.velocity.x * tS * 60/s);
+        var toy = (r.y/s + y_ + this.velocity.y * tS * 60/s);
+        context.moveTo(x_, y_);
         context.lineTo(tox, toy);
         r.normalize();
         r.mult(1.2 * this.radius/s);
@@ -128,6 +156,7 @@ function Ball(xx,yy, rad, m){
         
     };
     
+    //update the balls location
     this.update= function(tS){
         this.acceleration.x = this.force.x / (this.mass);
         this.acceleration.y = this.force.y / (this.mass);
@@ -142,17 +171,17 @@ function Ball(xx,yy, rad, m){
     
 }
 
+//calculate and apply the gravitational attraction between 2 physics objects
 function gravity(ball1, ball2){
-    //calculate gravity stuff
     "use strict";
+    //vector points from 2 to 1
     var diff= ball1.location.sub2(ball1.location, ball2.location);
-
     var distance = diff.mag();
-   // distance*=600000; values already in meters if using scale
-    
+    //calculate gravitations attraction, use diff for direction
     var attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (distance * distance);
     diff.normalize();
     
+    //apply forces
     ball1.force.x +=(attraction * -diff.x);
     ball1.force.y +=(attraction * -diff.y);
     
@@ -212,23 +241,42 @@ function collision(ball1, ball2, timeStep){
     ball2.velocity=vA2;
     
 }
-//do setup stuff here
-var balls = [];
-var i,z, s;
-var selected= -1;
-var timeScale=10;
-var timeSteps=50;
-var scale = 600000;
-balls.push(new Ball(scale * 500 ,scale * 500,scale * 63, 1e24));
-balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20));
-balls[1].velocity.y = 471.66372201672100474412475024634;
-balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1));
-//balls[2].velocity.x = 14.915316512453454021963870146151;
-//balls[2].velocity.y = 490.91931283543591058403099911566;
 
+//do setup stuff here
+
+var balls = []; //array of all physics objects, behaves liek arraylist
+
+var i,z, s; //variables for for loops
+
+var selected= -1; //the ball that is currently selected, -1 if none
+
+var timeScale=10; //amount of seconds one cycle represents
+var timeSteps=50; //amount of cycles per frame of animation
+
+var scale = 600000; //1px: scale meters
+var shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale);
+
+var drag = false;
+var dragFoc = new Vector(0,0);
+var dragClient = new Vector(0,0);
+
+
+//set up a starting amount of balls
+/*
+for(i=0;i<200;i+=1){
+    balls.push(new Ball(scale * canvas.width * i / 200 ,scale * canvas.height /2,scale * 5, 1, 255*(1-i/200),255*i/200,255*i/200));
+}
+*/
+
+balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,255,255,255));
+balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,255,255,255));
+balls[1].velocity.y = 471.66372201672100474412475024634;
+balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 255,255,255));
+
+
+//refresh a specific textbox
 function refresh(id){
     "use strict";
-    
     if(id == 'mass'){
         document.getElementById('mass').value = balls[selected].mass.toExponential();
     }else if(id == 'radius'){
@@ -249,11 +297,52 @@ function refresh(id){
         document.getElementById(id).value = scale.toExponential();
     }
 }
-document.onmouseup = function(event){
+
+//refresh all textboxes that could change on one frame
+function refreshAll(){
+    
     "use strict";
+    
+    if(document.activeElement.id != 'x'){
+        document.getElementById('x').value = balls[selected].location.x.toExponential();
+    }
+    if(document.activeElement.id !='y'){
+        document.getElementById('y').value = balls[selected].location.y.toExponential();
+    }
+    if(document.activeElement.id !='vx'){
+        document.getElementById('vx').value = balls[selected].velocity.x.toExponential();
+    }
+    if(document.activeElement.id !='vy'){
+        document.getElementById('vy').value = balls[selected].velocity.y.toExponential();
+    }
+    if(document.activeElement.id !='scale'){
+        document.getElementById('scale').value = scale.toExponential();
+    }
+    
+}
+
+//mousewheel changes scale of simulation, and the focuspoint
+var zoom = function(evt){
+    "use strict";
+    //from http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+    if (!evt){ evt = event;}
+    var delta = (evt.detail<0 || evt.wheelDelta>0) ? 1 : -1;
+    scale = scale * Math.pow(1.0717734625362931642130063250233,-delta);
+};
+
+canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
+canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
+
+//handles selecting balls
+document.onmousedown = function(event){
+    "use strict";       
+    //convert from the user's relative cordinate system to the absolute cordinate system
+    var mouse = new Vector((event.clientX - canvas.width/2)*scale, (event.clientY - canvas.height/2)*scale); 
+    mouse.add(shift);
+    //check if user clicked a ball
     var v;
 	for(v=0;v<balls.length;v+=1){
-		if(Math.sqrt((event.clientX - balls[v].location.x/scale) * (event.clientX - balls[v].location.x/scale) + (event.clientY - balls[v].location.y/scale) * (event.clientY - balls[v].location.y/scale)) < balls[v].radius/scale + 2){
+		if(Math.sqrt((mouse.x - balls[v].location.x) * (mouse.x - balls[v].location.x) + (mouse.y - balls[v].location.y) * (mouse.y - balls[v].location.y)) < balls[v].radius + 2){
             if(selected === v){
                 selected = -1;
                 document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
@@ -268,11 +357,30 @@ document.onmouseup = function(event){
                 refresh('vx');
                 refresh('vy');
             }
-            break;
+            return;
         }
 	}
+    //the user did not select anything; wants to move camera around
+    dragClient = new Vector(event.clientX, event.clientY);
+    dragFoc = new Vector(shift.x, shift.y);
+    drag = true;
 };
 
+document.onmouseup = function(event){
+    "use strict";
+    drag = false;
+    
+};
+var mouseUpdate = function(e){
+    "use strict";
+    if(drag){
+        var mouse = new Vector((dragClient.x -e.clientX)*scale, (dragClient.y -e.clientY)*scale);
+        mouse.add(dragFoc);
+        shift=mouse;
+    }
+};
+document.addEventListener('mousemove', mouseUpdate, false);
+//handles user input through textboxes, runs on enter
 function uInput(id){
     "use strict";
     if(id == "timescale"){
@@ -296,34 +404,44 @@ function uInput(id){
     }
 }
 
-//frame is basically a while loop
+//frame is basically a while loop or draw loop
 var frame= function(){
     "use strict";
     for(s=0;s<timeSteps;s+=1){
+        //calculate gravitational attractions
         for(i=0;i<balls.length-1; i+=1){
             for(z=(i+1);z<balls.length;z+=1){
                 gravity(balls[i], balls[z]);
             }
         }
-    
+        
+        //check for collision between all balls
         for(i=0;i<balls.length-1; i+=1){
             for(z=(i+1);z<balls.length;z+=1){
                 collision(balls[i], balls[z], timeScale);
             }
         }
+        //calculate the new values for all balls
         for(i=0;i<balls.length;i+=1){
             balls[i].update(timeScale);
         }
     }
+    
     if(!document.getElementById('trace').checked){
+        //Resets canvas
         context.fillStyle = "#000000";
         context.fillRect(0,0,canvas.width, canvas.height);
     }
+    
+    //draws the selection outline
     if(selected!=-1){
-        balls[selected].selected(scale, timeScale * timeSteps);
+        balls[selected].selected(scale, timeScale * timeSteps, shift);
+        refreshAll();
     }
+    
+    //render all balls
     for(i=0;i<balls.length;i+=1){
-        balls[i].render(scale);
+        balls[i].render(scale, shift);
     }
     
     animate(frame);
