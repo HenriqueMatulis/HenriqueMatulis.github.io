@@ -16,7 +16,7 @@
             <p class = 'decription'>Steps per frame (Integer Value)</p>
             <input id = 'steps' value='50'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
                 
-            <p class = 'decription'>Scale (how many meters equal one pixel)</p>
+            <p class = 'decription'>Scale (x meters : 1px)</p>
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
             
             <p class = 'decription'>Trace</p>
@@ -25,22 +25,22 @@
         <p id='title'>Selection Options</p>
         <div>
             
-            <p class = 'decription'> mass</p>
+            <p class = 'decription'> mass (kg)</p>
             <input id = 'mass' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off' onblur='refresh("mass")'/>
                 
-            <p class = 'decription'> radius</p>
+            <p class = 'decription'> radius (m)</p>
             <input id = 'radius' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off' onblur='refresh("radius")'/>
                 
-            <p class = 'decription'> x location</p>
+            <p class = 'decription'> x location (m)</p>
             <input id = 'x' disabled  onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off' onblur='refresh("x")'/>
                 
-            <p class = 'decription'> y location</p>
+            <p class = 'decription'> y location (m)</p>
             <input id = 'y' disabled  onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off' onblur='refresh("y")'/>
                 
-            <p class = 'decription'>x velocity</p>
+            <p class = 'decription'>x velocity (m/s)</p>
             <input id = 'vx' disabled  onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off' onblur='refresh("vx")'/>
                 
-            <p class = 'decription'>y velocity</p>
+            <p class = 'decription'>y velocity (m/s)</p>
             <input id = 'vy' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off' onblur='refresh("vy")'/>
         </div>
     </div>
