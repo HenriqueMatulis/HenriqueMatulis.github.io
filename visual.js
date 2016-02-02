@@ -101,7 +101,7 @@ function Vector(xx, yy){
 }
 
 //Ball class contains data for all physics objects
-function Ball(xx,yy, rad, m, r_, g_, b_){
+function Ball(xx,yy, rad, m, hu_, sa_, br_){
     "use strict";
     this.location=new Vector(xx,yy);
     this.velocity=new Vector(0,0);
@@ -111,13 +111,14 @@ function Ball(xx,yy, rad, m, r_, g_, b_){
     this.radius=rad;
     this.mass=m;
     //color
-    this.r=r_;
-    this.g=g_;
-    this.b=b_;
+    this.hue=hu_;
+    this.sat=sa_;
+    this.brig=br_;
     //render the ball
     this.render= function(s, f){
         //s=scale, fx= focusx, fy=focusy
-        context.fillStyle = "rgb("+this.r+","+this.g+","+ this.b+")";
+        context.fillStyle = "hsl("+this.hue+", "+this.sat+"%, "+ this.brig+"%)";
+       // "hsl(0, 0%, 100%)"
         context.beginPath();
         var x_ = canvas.width/2 + (this.location.x - f.x)/s;
         var y_ = canvas.height/2 + (this.location.y - f.y)/s;
@@ -268,10 +269,10 @@ for(i=0;i<200;i+=1){
 }
 */
 
-balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,255,255,255));
-balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,255,255,255));
+balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
+balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
 balls[1].velocity.y = 471.66372201672100474412475024634;
-balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 255,255,255));
+balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
 
 
 //refresh a specific textbox
