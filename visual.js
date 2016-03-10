@@ -98,6 +98,7 @@ function Vector(xx, yy){
         this.y = yy * Math.cos(angle) + xx * Math.sin(angle);
     };
     
+
 }
 
 //Ball class contains data for all physics objects
@@ -255,10 +256,10 @@ var timeScale=10; //amount of seconds one cycle represents
 var timeSteps=50; //amount of cycles per frame of animation
 
 var scale = 600000; //1px: scale meters
-var shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale);
+var shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale); //point where the screen is centered around
 
-var drag = false;
-var dragFoc = new Vector(0,0);
+var drag = -2;
+var dragFoc = new Vector(0,0); //drag focus (where the dragging started)
 var dragClient = new Vector(0,0);
 
 
@@ -303,6 +304,12 @@ function refresh(id){
 function refreshAll(){
     
     "use strict";
+    if(document.activeElement.id !='scale'){
+        document.getElementById('scale').value = scale.toExponential();
+    }
+    if(selected==-1){
+        return;
+    }
     
     if(document.activeElement.id != 'x'){
         document.getElementById('x').value = balls[selected].location.x.toExponential();
@@ -316,9 +323,7 @@ function refreshAll(){
     if(document.activeElement.id !='vy'){
         document.getElementById('vy').value = balls[selected].velocity.y.toExponential();
     }
-    if(document.activeElement.id !='scale'){
-        document.getElementById('scale').value = scale.toExponential();
-    }
+    
     
 }
 
@@ -334,50 +339,89 @@ var zoom = function(evt){
 canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
 canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
 
-//handles selecting balls
-document.onmousedown = function(event){
-    "use strict";       
+//convert user's relative co-ordinate system to the absolute cordinate system
+function convertToAbs(loc){
+    "use strict";
+    var l = new Vector((loc.x - canvas.width/2)*scale, (loc.y - canvas.height/2)*scale);
+    l.add(shift);
+    return l;
+}
+//find ball that overlaps given co-ordinate, pass in mouse co-ordinates in vector form
+function findBall(m){
+    "use strict";
     //convert from the user's relative cordinate system to the absolute cordinate system
-    var mouse = new Vector((event.clientX - canvas.width/2)*scale, (event.clientY - canvas.height/2)*scale); 
-    mouse.add(shift);
-    //check if user clicked a ball
+    var mouse = convertToAbs(m); 
+    //check if point is over a ball
     var v;
 	for(v=0;v<balls.length;v+=1){
 		if(Math.sqrt((mouse.x - balls[v].location.x) * (mouse.x - balls[v].location.x) + (mouse.y - balls[v].location.y) * (mouse.y - balls[v].location.y)) < balls[v].radius + 2){
-            if(selected === v){
-                selected = -1;
-                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
-                
-            }else{
-                selected = v;
-                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = false;
-                refresh('mass');
-                refresh('radius');
-                refresh('x');
-                refresh('y');
-                refresh('vx');
-                refresh('vy');
-            }
-            return;
+            return v;
         }
-	}
+    }
+    
+    return -1; //no ball
+}
+
+//handles selecting balls
+document.onmousedown = function(event){
+    "use strict";   
+    //check if mouse is within canvas
+    if(event.clientX > canvas.width){
+        return;
+    }
+    
+    //check if user clicked a ball
+    var mouse = new Vector(event.clientX, event.clientY); 
+    var clicked = findBall(mouse);
+    //find what function clicking is set to
+    var clickR = document.getElementsByName("click");
+    
+    var v=0;
+    for(v = 0; v < clickR.length; v+=1) {
+        if(clickR[v].checked == true) {
+            if(clickR[v].value == 'drag' && clicked >=0){
+                drag=clicked;
+                return;
+            }
+        }
+    }
+    
+    if(selected === clicked){
+        selected = -1;
+        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
+        return;
+                
+    }else if(clicked >= 0){
+        selected = clicked;
+        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = false;
+        refresh('mass');
+        refresh('radius');
+        refresh('x');
+        refresh('y');
+        refresh('vx');
+        refresh('vy');
+        return;
+    }
+    
     //the user did not select anything; wants to move camera around
     dragClient = new Vector(event.clientX, event.clientY);
     dragFoc = new Vector(shift.x, shift.y);
-    drag = true;
+    drag = -1;
 };
 
 document.onmouseup = function(event){
     "use strict";
-    drag = false;
+    drag = -2;
     
 };
 var mouseUpdate = function(e){
     "use strict";
-    if(drag){
+    if(drag == -1){
         var mouse = new Vector((dragClient.x -e.clientX)*scale, (dragClient.y -e.clientY)*scale);
         mouse.add(dragFoc);
         shift=mouse;
+    }else if(drag >=0){
+        balls[drag].location = convertToAbs(new Vector(e.clientX, e.clientY));
     }
 };
 document.addEventListener('mousemove', mouseUpdate, false);
@@ -428,17 +472,18 @@ var frame= function(){
         }
     }
     
-    if(!document.getElementById('trace').checked){
-        //Resets canvas
-        context.fillStyle = "#000000";
-        context.fillRect(0,0,canvas.width, canvas.height);
-    }
+    //Resets canvas
+    context.fillStyle = "rgba(0,0,0,"+(document.getElementById('trace').value==0?1:(1.0/(document.getElementById('trace').value *60))) +")";
+    context.fillRect(0,0,canvas.width, canvas.height);
+    
     
     //draws the selection outline
     if(selected!=-1){
         balls[selected].selected(scale, timeScale * timeSteps, shift);
-        refreshAll();
     }
+    
+    //refresh the info panel
+    refreshAll();
     
     //render all balls
     for(i=0;i<balls.length;i+=1){

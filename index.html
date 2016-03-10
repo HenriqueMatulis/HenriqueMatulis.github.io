@@ -20,7 +20,8 @@
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
             
             <p class = 'decription'>Trace</p>
-            <input id = 'trace' type ='checkbox' value='false' autocomplete='off'/>
+            <input id = 'trace' type="range"  min="0" max="10" autocomplete='off' value='0' step='0.01'>
+            <!--<input id = 'trace' type ='checkbox' value='false' autocomplete='off'/> -->
         </div>
         <p id='title'>Selection Options</p>
         <div>
@@ -43,6 +44,13 @@
             <p class = 'decription'>y velocity (m/s)</p>
             <input id = 'vy' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off' onblur='refresh("vy")'/>
         </div>
+         <p id='title'>Click Options</p>
+        <div>
+            <p class = 'decription'><input type="radio" name="click" value="select" autocomplete='off' checked="checked"> Select</p>
+            <p class = 'decription'> <input type="radio" name="click" value="drag" autocomplete='off'> Drag</p>
+            <!--<p class = 'decription'><input type="radio" name="click" value="scale"> Scale</p> -->
+        </div>
+            
     </div>
 </body>
 </HTML>
