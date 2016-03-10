@@ -375,7 +375,6 @@ document.onmousedown = function(event){
     var clicked = findBall(mouse);
     //find what function clicking is set to
     var clickR = document.getElementsByName("click");
-    
     var v=0;
     for(v = 0; v < clickR.length; v+=1) {
         if(clickR[v].checked == true) {
@@ -386,12 +385,13 @@ document.onmousedown = function(event){
         }
     }
     
-    if(selected === clicked){
-        selected = -1;
-        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
-        return;
-                
-    }else if(clicked >= 0){
+    if(clicked >= 0){
+        if(selected === clicked){
+            selected = -1;
+            document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
+            return;          
+        }
+        
         selected = clicked;
         document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = false;
         refresh('mass');
