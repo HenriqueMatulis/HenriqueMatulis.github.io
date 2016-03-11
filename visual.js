@@ -301,6 +301,7 @@ function setup(){
 
 function deleteAll(){
     "use strict";
+    selected= -1;
     balls=[];
 }
 
