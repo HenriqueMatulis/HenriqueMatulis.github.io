@@ -268,18 +268,39 @@ var dragFoc = new Vector(0,0); //drag focus (where the dragging started)
 var dragClient = new Vector(0,0);
 var mouseLoc = new Vector(0,0);
 
-
-//set up a starting amount of balls
-/*
-for(i=0;i<200;i+=1){
-    balls.push(new Ball(scale * canvas.width * i / 200 ,scale * canvas.height /2,scale * 5, 1, 255*(1-i/200),255*i/200,255*i/200));
-}
-*/
+//create ball function radius relative to screen
+var createRadius=20;
 
 balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
 balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
 balls[1].velocity.y = 471.66372201672100474412475024634;
 balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
+
+function setup(){
+    "use strict";
+    timeScale=10; //amount of seconds one cycle represents
+    timeSteps=50; //amount of cycles per frame of animation
+
+    scale = 600000; //1px: scale meters
+    shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale); //point where the screen is centered around
+
+    //mouse stuff
+    drag = -2; //what is being dragged currently (-1 is bg, -2 is nothing, 0 and above are balls)
+    dragFoc = new Vector(0,0); //drag focus (where the dragging started)
+    dragClient = new Vector(0,0);
+    mouseLoc = new Vector(0,0);
+    
+    balls=[];
+    balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
+    balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
+    balls[1].velocity.y = 471.66372201672100474412475024634;
+    balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
+}
+
+function deleteAll(){
+    "use strict";
+    balls=[];
+}
 
 
 //refresh a specific textbox
@@ -333,17 +354,7 @@ function refreshAll(){
     
 }
 
-//mousewheel changes scale of simulation, and the focuspoint
-var zoom = function(evt){
-    "use strict";
-    //from http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
-    if (!evt){ evt = event;}
-    var delta = (evt.detail<0 || evt.wheelDelta>0) ? 1 : -1;
-    scale = scale * Math.pow(1.0717734625362931642130063250233,-delta);
-};
 
-canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
-canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
 
 //convert user's relative co-ordinate system to the absolute cordinate system
 function convertToAbs(loc){
@@ -353,18 +364,29 @@ function convertToAbs(loc){
     return l;
 }
 //find ball that overlaps given co-ordinate, pass in mouse co-ordinates in vector form
-function findBall(loc){
+function findBall(loc, give){
     "use strict";
     
     //check if point is over a ball
     var v;
 	for(v=0;v<balls.length;v+=1){
-		if(Math.sqrt((loc.x - balls[v].location.x) * (loc.x - balls[v].location.x) + (loc.y - balls[v].location.y) * (loc.y - balls[v].location.y)) < balls[v].radius + 2){
+		if(Math.sqrt((loc.x - balls[v].location.x) * (loc.x - balls[v].location.x) + (loc.y - balls[v].location.y) * (loc.y - balls[v].location.y)) < balls[v].radius + give){
             return v;
         }
     }
     
     return -1; //no ball
+}
+
+function getClickStyle(){
+    "use strict";
+    var clickR = document.getElementsByName("click");
+    var v=0;
+    for(v = 0; v < clickR.length; v+=1) {
+        if(clickR[v].checked == true) {
+            return clickR[v].value;
+        }
+    }
 }
 
 //handles selecting balls
@@ -379,16 +401,9 @@ document.onmousedown = function(event){
     var mouse = new Vector(event.clientX, event.clientY); 
     mouse = convertToAbs(mouse);
     
-    var clicked = findBall(mouse);
+    var clicked = findBall(mouse, 20 * scale);
     //find what function clicking is set to
-    var clickR = document.getElementsByName("click");
-    var v=0;
-    for(v = 0; v < clickR.length; v+=1) {
-        if(clickR[v].checked == true) {
-            clickR = clickR[v].value;
-           break;
-        }
-    }
+    var clickR = getClickStyle();
      
     if(clicked >= 0){
         if(clickR == 'drag'){
@@ -439,7 +454,7 @@ document.onmousedown = function(event){
     }
     
     if(clickR == 'create'){
-        balls.push(new Ball(mouse.x , mouse.y, scale * 10, 1,0,0,100));
+        balls.push(new Ball(mouse.x , mouse.y, scale * createRadius, 1,0,0,100));
         return;
     }
     
@@ -460,6 +475,25 @@ document.onmouseup = function(event){
     drag = -2;
     
 };
+
+//mousewheel changes scale of simulation, and the focuspoint
+var zoom = function(evt){
+    "use strict";
+    
+    //from http://stackoverflow.com/questions/5527601/normalizing-mousewheel-speed-across-browsers
+    if (!evt){ evt = event;}
+    var delta = (evt.detail<0 || evt.wheelDelta>0) ? 1 : -1;
+    
+    if(getClickStyle() == 'create'){
+        createRadius+=createRadius+delta<=0?0:delta;
+       return;
+    }
+    scale = scale * Math.pow(1.0717734625362931642130063250233,-delta);
+};
+
+canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
+canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
+
 var mouseUpdate = function(e){
     "use strict";
     //update mouse location
@@ -533,63 +567,59 @@ var frame= function(){
     
     
     //find current mouse function
-    var clickR = document.getElementsByName("click");
-    for(i = 0; i < clickR.length; i+=1) {
-        if(clickR[i].checked == true) {
+    var clickR = getClickStyle();
+    
+    if(clickR == 'create'){
+         context.fillStyle = "rgb(0, 255, 255)";
+        context.beginPath();
+        
+        context.arc(mouseLoc.x, mouseLoc.y, createRadius+2, 0, 2*Math.PI);
+        context.fill();
+              
+        context.fillStyle = "rgb(0, 0, 0)";
+        context.beginPath();
+                
+        context.arc(mouseLoc.x, mouseLoc.y, createRadius, 0, 2*Math.PI);
+        context.fill();
+                
+        }else if(clickR == 'delete'){
+                
+        }else if(clickR == 'copy'){
+            context.fillStyle = "rgb(0, 255, 255)";
+            context.beginPath();
+                
+            context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale +2, 0, 2*Math.PI);
+            context.fill();
+                
+            context.fillStyle = "rgb(0, 0, 0)";
+            context.beginPath();
+                
+            context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale, 0, 2*Math.PI);
+            context.fill();
+                
+        }else if(clickR == 'orbit'){
+            var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
+            if(mouseOver >=0 && mouseOver != selected){
+                var diff = balls[selected].location.sub2(balls[mouseOver].location, balls[selected].location);
+                 diff = diff.mag() / scale;
+                    
+                var x_ = canvas.width/2 + (balls[mouseOver].location.x - shift.x)/scale;
+                var y_ = canvas.height/2 + (balls[mouseOver].location.y - shift.y)/scale;
+                    
+                context.fillStyle = "rgb(0, 255, 255)";
+                context.beginPath();
             
-            if(clickR[i].value == 'create'){
-                context.fillStyle = "rgb(0, 255, 255)";
-                context.beginPath();
-                
-                context.arc(mouseLoc.x, mouseLoc.y, 12, 0, 2*Math.PI);
+                context.arc(x_, y_, diff +2, 0, 2*Math.PI);
                 context.fill();
-                
+            
                 context.fillStyle = "rgb(0, 0, 0)";
                 context.beginPath();
                 
-                context.arc(mouseLoc.x, mouseLoc.y, 10, 0, 2*Math.PI);
+                context.arc(x_, y_, diff, 0, 2*Math.PI);
                 context.fill();
-                
-            }else if(clickR[i].value == 'delete'){
-                
-            }else if(clickR[i].value == 'copy'){
-                context.fillStyle = "rgb(0, 255, 255)";
-                context.beginPath();
-                
-                context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale +2, 0, 2*Math.PI);
-                context.fill();
-                
-                context.fillStyle = "rgb(0, 0, 0)";
-                context.beginPath();
-                
-                context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale, 0, 2*Math.PI);
-                context.fill();
-                
-            }else if(clickR[i].value == 'orbit'){
-                var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)));
-                if(mouseOver >=0){
-                    var diff = balls[selected].location.sub2(balls[mouseOver].location, balls[selected].location);
-                    diff = diff.mag() / scale;
-                    
-                    var x_ = canvas.width/2 + (balls[mouseOver].location.x - shift.x)/scale;
-                    var y_ = canvas.height/2 + (balls[mouseOver].location.y - shift.y)/scale;
-                    
-                    context.fillStyle = "rgb(0, 255, 255)";
-                    context.beginPath();
-                
-                    context.arc(x_, y_, diff +2, 0, 2*Math.PI);
-                    context.fill();
-                
-                    context.fillStyle = "rgb(0, 0, 0)";
-                    context.beginPath();
-                
-                    context.arc(x_, y_, diff, 0, 2*Math.PI);
-                    context.fill();
-                }
             }
-           break;
         }
-    }
+
     
     //draws the selection outline
     if(selected!=-1){
