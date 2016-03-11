@@ -10,10 +10,10 @@
     <p id='title'>Global Options</p>
         <div class='group'>
             <!-- use onblur='/' to undo unsubmitted changes-->
-            <p class = 'decription'>Timescale per step</p>
+            <span title="Little performance impact, decreases accuracy"><p class = 'decription'>Timescale per step</p></span>
             <input id = 'timescale' value='10'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
                 
-            <p class = 'decription'>Steps per frame (Integer Value)</p>
+            <span title="Doesn't affect accuracy but decreases performance"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
             <input id = 'steps' value='50'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
                 
             <p class = 'decription'>Scale (x meters : 1px)</p>
