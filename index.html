@@ -44,10 +44,18 @@
             <p class = 'decription'>y velocity (m/s)</p>
             <input id = 'vy' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off' onblur='refresh("vy")'/>
         </div>
-         <p id='title'>Click Options</p>
+         <p id='title'>Click Functions</p>
         <div>
             <p class = 'decription'><input type="radio" name="click" value="select" autocomplete='off' checked="checked"> Select</p>
             <p class = 'decription'> <input type="radio" name="click" value="drag" autocomplete='off'> Drag</p>
+            <p class = 'decription'> <input type="radio" name="click" value="create" autocomplete='off'> Create</p>
+            <p class = 'decription'> <input type="radio" name="click" value="delete" autocomplete='off'> Delete</p>
+        </div>
+        
+        <p id='title'>Selection Functions</p>
+        <div>
+            <p class = 'decription'> <input type="radio" name="click" id="copy" value="copy" autocomplete='off' disabled> Make Copy</p>
+            <p class = 'decription'> <input type="radio" name="click" id="orbit" value="orbit" autocomplete='off' disabled> Approximate Orbit</p>
             <!--<p class = 'decription'><input type="radio" name="click" value="scale"> Scale</p> -->
         </div>
             

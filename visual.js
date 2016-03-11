@@ -22,12 +22,16 @@ function Vector(xx, yy){
     this.y=yy;
     /**
     Add a vector to this one
+    returns void
     */
     this.add=function(vector){
         this.x+=vector.x;
         this.y+=vector.y;
     };
-    //Add two vectors
+    /**
+    Add two vectors
+    returns the result
+    */
     this.add2=function(v1, v2){
         var v = new Vector(v1.x, v1.y);
         v.add(v2);
@@ -258,9 +262,11 @@ var timeSteps=50; //amount of cycles per frame of animation
 var scale = 600000; //1px: scale meters
 var shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale); //point where the screen is centered around
 
-var drag = -2;
+//mouse stuff
+var drag = -2; //what is being dragged currently (-1 is bg, -2 is nothing, 0 and above are balls)
 var dragFoc = new Vector(0,0); //drag focus (where the dragging started)
 var dragClient = new Vector(0,0);
+var mouseLoc = new Vector(0,0);
 
 
 //set up a starting amount of balls
@@ -347,14 +353,13 @@ function convertToAbs(loc){
     return l;
 }
 //find ball that overlaps given co-ordinate, pass in mouse co-ordinates in vector form
-function findBall(m){
+function findBall(loc){
     "use strict";
-    //convert from the user's relative cordinate system to the absolute cordinate system
-    var mouse = convertToAbs(m); 
+    
     //check if point is over a ball
     var v;
 	for(v=0;v<balls.length;v+=1){
-		if(Math.sqrt((mouse.x - balls[v].location.x) * (mouse.x - balls[v].location.x) + (mouse.y - balls[v].location.y) * (mouse.y - balls[v].location.y)) < balls[v].radius + 2){
+		if(Math.sqrt((loc.x - balls[v].location.x) * (loc.x - balls[v].location.x) + (loc.y - balls[v].location.y) * (loc.y - balls[v].location.y)) < balls[v].radius + 2){
             return v;
         }
     }
@@ -372,36 +377,77 @@ document.onmousedown = function(event){
     
     //check if user clicked a ball
     var mouse = new Vector(event.clientX, event.clientY); 
+    mouse = convertToAbs(mouse);
+    
     var clicked = findBall(mouse);
     //find what function clicking is set to
     var clickR = document.getElementsByName("click");
     var v=0;
     for(v = 0; v < clickR.length; v+=1) {
         if(clickR[v].checked == true) {
-            if(clickR[v].value == 'drag' && clicked >=0){
+            clickR = clickR[v].value;
+           break;
+        }
+    }
+     
+    if(clicked >= 0){
+        if(clickR == 'drag'){
                 drag=clicked;
                 return;
+        }
+        
+        if(clickR == 'select'){
+            if(selected === clicked){
+                selected = -1;
+                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                return;          
             }
+        
+            selected = clicked;
+            document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
+            refresh('mass');
+            refresh('radius');
+            refresh('x');
+            refresh('y');
+            refresh('vx');
+            refresh('vy');
+            return;
+        }
+        
+        if(clickR == 'delete'){
+            balls.splice(clicked, 1);
+            return;
+        }
+        
+        if(clickR == 'orbit' && clicked != selected){
+            //make vector that points from selected to clicked
+            var difference = balls[clicked].location.sub2(balls[clicked].location, balls[selected].location);
+            
+            //find orbital speed at given distance (circular)
+            var speed = Math.sqrt(6.67384e-11 * balls[clicked].mass / difference.mag());
+            
+
+            //translate speed into vector
+            difference.normalize();
+            difference.rotate(Math.PI/2);
+            difference.mult(speed);
+
+            //update selected's velocity
+            balls[selected].velocity = difference;
+            return;
         }
     }
     
-    if(clicked >= 0){
-        if(selected === clicked){
-            selected = -1;
-            document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = true;
-            return;          
-        }
-        
-        selected = clicked;
-        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled = document.getElementById('vy').disabled = false;
-        refresh('mass');
-        refresh('radius');
-        refresh('x');
-        refresh('y');
-        refresh('vx');
-        refresh('vy');
+    if(clickR == 'create'){
+        balls.push(new Ball(mouse.x , mouse.y, scale * 10, 1,0,0,100));
         return;
     }
+    
+    if(clickR == 'copy'){
+        balls.push(new Ball(mouse.x , mouse.y, balls[selected].radius, balls[selected].mass, balls[selected].hue, balls[selected].sat, balls[selected].brig));
+        return;
+    }
+    
     
     //the user did not select anything; wants to move camera around
     dragClient = new Vector(event.clientX, event.clientY);
@@ -416,6 +462,10 @@ document.onmouseup = function(event){
 };
 var mouseUpdate = function(e){
     "use strict";
+    //update mouse location
+    mouseLoc.x = e.clientX;
+    mouseLoc.y = e.clientY;
+    
     if(drag == -1){
         var mouse = new Vector((dragClient.x -e.clientX)*scale, (dragClient.y -e.clientY)*scale);
         mouse.add(dragFoc);
@@ -472,18 +522,79 @@ var frame= function(){
         }
     }
     
+    //refresh the info panel
+    refreshAll();
+    
     //Resets canvas
     context.fillStyle = "rgba(0,0,0,"+(document.getElementById('trace').value==0?1:(1.0/(document.getElementById('trace').value *60))) +")";
     context.fillRect(0,0,canvas.width, canvas.height);
     
     
+    
+    
+    //find current mouse function
+    var clickR = document.getElementsByName("click");
+    for(i = 0; i < clickR.length; i+=1) {
+        if(clickR[i].checked == true) {
+            
+            if(clickR[i].value == 'create'){
+                context.fillStyle = "rgb(0, 255, 255)";
+                context.beginPath();
+                
+                context.arc(mouseLoc.x, mouseLoc.y, 12, 0, 2*Math.PI);
+                context.fill();
+                
+                context.fillStyle = "rgb(0, 0, 0)";
+                context.beginPath();
+                
+                context.arc(mouseLoc.x, mouseLoc.y, 10, 0, 2*Math.PI);
+                context.fill();
+                
+            }else if(clickR[i].value == 'delete'){
+                
+            }else if(clickR[i].value == 'copy'){
+                context.fillStyle = "rgb(0, 255, 255)";
+                context.beginPath();
+                
+                context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale +2, 0, 2*Math.PI);
+                context.fill();
+                
+                context.fillStyle = "rgb(0, 0, 0)";
+                context.beginPath();
+                
+                context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale, 0, 2*Math.PI);
+                context.fill();
+                
+            }else if(clickR[i].value == 'orbit'){
+                var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)));
+                if(mouseOver >=0){
+                    var diff = balls[selected].location.sub2(balls[mouseOver].location, balls[selected].location);
+                    diff = diff.mag() / scale;
+                    
+                    var x_ = canvas.width/2 + (balls[mouseOver].location.x - shift.x)/scale;
+                    var y_ = canvas.height/2 + (balls[mouseOver].location.y - shift.y)/scale;
+                    
+                    context.fillStyle = "rgb(0, 255, 255)";
+                    context.beginPath();
+                
+                    context.arc(x_, y_, diff +2, 0, 2*Math.PI);
+                    context.fill();
+                
+                    context.fillStyle = "rgb(0, 0, 0)";
+                    context.beginPath();
+                
+                    context.arc(x_, y_, diff, 0, 2*Math.PI);
+                    context.fill();
+                }
+            }
+           break;
+        }
+    }
+    
     //draws the selection outline
     if(selected!=-1){
         balls[selected].selected(scale, timeScale * timeSteps, shift);
     }
-    
-    //refresh the info panel
-    refreshAll();
     
     //render all balls
     for(i=0;i<balls.length;i+=1){
