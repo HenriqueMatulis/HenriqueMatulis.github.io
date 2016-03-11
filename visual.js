@@ -278,6 +278,8 @@ balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
 
 function setup(){
     "use strict";
+    selected= -1; //the ball that is currently selected, -1 if none
+    
     timeScale=10; //amount of seconds one cycle represents
     timeSteps=50; //amount of cycles per frame of animation
 
