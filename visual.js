@@ -271,6 +271,7 @@ var mouseLoc = new Vector(0,0);
 //create ball function radius relative to screen
 var createRadius=20;
 
+var mvUp=false, mvDown=false, mvLeft=false, mvRight=false;
 balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
 balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
 balls[1].velocity.y = 471.66372201672100474412475024634;
@@ -278,6 +279,11 @@ balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
 
 function setup(){
     "use strict";
+    
+    //Resets canvas
+    context.fillStyle = "rgb(0,0,0)";
+    context.fillRect(0,0,canvas.width, canvas.height);
+    
     selected= -1; //the ball that is currently selected, -1 if none
     
     timeScale=10; //amount of seconds one cycle represents
@@ -290,9 +296,9 @@ function setup(){
     drag = -2; //what is being dragged currently (-1 is bg, -2 is nothing, 0 and above are balls)
     dragFoc = new Vector(0,0); //drag focus (where the dragging started)
     dragClient = new Vector(0,0);
-    mouseLoc = new Vector(0,0);
     
     balls=[];
+    mvUp = mvDown = mvLeft = mvRight = false;
     balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
     balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
     balls[1].velocity.y = 471.66372201672100474412475024634;
@@ -302,6 +308,9 @@ function setup(){
 function deleteAll(){
     "use strict";
     selected= -1;
+    //Resets canvas
+    context.fillStyle = "rgb(0,0,0)";
+    context.fillRect(0,0,canvas.width, canvas.height);
     balls=[];
 }
 
@@ -433,6 +442,11 @@ document.onmousedown = function(event){
         }
         
         if(clickR == 'delete'){
+            if(selected == clicked){
+                selected=-1;
+            }else if(selected>=clicked){
+                selected-=1;
+            }
             balls.splice(clicked, 1);
             return;
         }
@@ -466,11 +480,12 @@ document.onmousedown = function(event){
         return;
     }
     
-    
-    //the user did not select anything; wants to move camera around
-    dragClient = new Vector(event.clientX, event.clientY);
-    dragFoc = new Vector(shift.x, shift.y);
-    drag = -1;
+    if(clickR=='drag'){
+        //the user did not select anything; wants to move camera around
+        dragClient = new Vector(event.clientX, event.clientY);
+        dragFoc = new Vector(shift.x, shift.y);
+        drag = -1;
+    }
 };
 
 document.onmouseup = function(event){
@@ -478,6 +493,15 @@ document.onmouseup = function(event){
     drag = -2;
     
 };
+
+var mouseUpdate = function(e){
+    "use strict";
+    //update mouse location
+    mouseLoc.x = e.clientX;
+    mouseLoc.y = e.clientY;
+    
+};
+document.addEventListener('mousemove', mouseUpdate, false);
 
 //mousewheel changes scale of simulation, and the focuspoint
 var zoom = function(evt){
@@ -497,21 +521,52 @@ var zoom = function(evt){
 canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
 canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
 
-var mouseUpdate = function(e){
+window.onkeydown = function(e){
     "use strict";
-    //update mouse location
-    mouseLoc.x = e.clientX;
-    mouseLoc.y = e.clientY;
-    
-    if(drag == -1){
-        var mouse = new Vector((dragClient.x -e.clientX)*scale, (dragClient.y -e.clientY)*scale);
-        mouse.add(dragFoc);
-        shift=mouse;
-    }else if(drag >=0){
-        balls[drag].location = convertToAbs(new Vector(e.clientX, e.clientY));
+    var keyCode = e.keyCode || e.which;
+    if(keyCode == 65 || keyCode ==37){
+        //left arrow or a key, go left
+        mvLeft = true;
+        
+    }else if(keyCode == 68 || keyCode ==39){
+        //right arrow or d key, go right
+        mvRight = true;
+    }
+    if(keyCode == 83 || keyCode ==40){
+        //down arrow or s key, go down
+        mvDown = true;
+        
+    }else if(keyCode == 87 || keyCode ==38){
+        //up arrow or w key, go up
+        mvUp = true;
+        
     }
 };
-document.addEventListener('mousemove', mouseUpdate, false);
+
+window.onkeyup = function(e){
+    "use strict";
+    var keyCode = e.keyCode || e.which;
+    
+    if(keyCode == 65 || keyCode ==37){
+        //left arrow or a key, go left
+        mvLeft = false;
+        
+    }else if(keyCode == 68 || keyCode ==39){
+        //right arrow or d key, go right
+        mvRight = false;
+    }
+    if(keyCode == 83 || keyCode ==40){
+        //down arrow or s key, go down
+        mvDown = false;
+        
+    }else if(keyCode == 87 || keyCode ==38){
+        //up arrow or w key, go up
+        mvUp = false;
+        
+    }
+};
+
+
 //handles user input through textboxes, runs on enter
 function uInput(id){
     "use strict";
@@ -621,6 +676,14 @@ var frame= function(){
                 context.arc(x_, y_, diff, 0, 2*Math.PI);
                 context.fill();
             }
+        }else if(clickR == 'drag'){
+            if(drag == -1){
+                var mouse = new Vector((dragClient.x -mouseLoc.x)*scale, (dragClient.y -mouseLoc.y)*scale);
+                mouse.add(dragFoc);
+                shift=mouse;
+            }else if(drag >=0){
+                balls[drag].location = convertToAbs(new Vector(mouseLoc.x, mouseLoc.y));
+            }
         }
 
     
@@ -632,6 +695,20 @@ var frame= function(){
     //render all balls
     for(i=0;i<balls.length;i+=1){
         balls[i].render(scale, shift);
+    }
+    
+    if(mvRight && !mvLeft){
+        shift.x += scale * 10;
+    }else if(mvLeft && !mvRight){
+        shift.x -= scale * 10;
+    }
+    
+    if(mvUp && !mvDown){
+        shift.y -= scale * 10;
+        
+    }else if(mvDown && !mvUp){
+        shift.y += scale * 10;
+        
     }
     
     animate(frame);
