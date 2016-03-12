@@ -142,6 +142,7 @@ function Ball(xx,yy, rad, m, hu_, sa_, br_){
         context.fill();
         
         //draw velocity vector
+        context.lineWidth = 1;
         var r = new Vector(this.velocity.x, this.velocity.y);
         r.normalize();
         r.mult(this.radius + 2);
@@ -303,11 +304,14 @@ function setup(){
     balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
     balls[1].velocity.y = 471.66372201672100474412475024634;
     balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
+    
+    document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
 }
 
 function deleteAll(){
     "use strict";
     selected= -1;
+    document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
@@ -375,19 +379,31 @@ function convertToAbs(loc){
     l.add(shift);
     return l;
 }
+
+//convert from absolute to relative co-ordinate system
+function convertToRel(loc){
+    "use strict";
+    var l = new Vector(canvas.width/2 + (loc.x - shift.x)/scale, canvas.height/2 + (loc.y - shift.y)/scale);
+    return l;
+}
+
 //find ball that overlaps given co-ordinate, pass in mouse co-ordinates in vector form
 function findBall(loc, give){
     "use strict";
     
     //check if point is over a ball
-    var v;
+    var v, min = give, minId=-1;
 	for(v=0;v<balls.length;v+=1){
-		if(Math.sqrt((loc.x - balls[v].location.x) * (loc.x - balls[v].location.x) + (loc.y - balls[v].location.y) * (loc.y - balls[v].location.y)) < balls[v].radius + give){
+        var delta =Math.sqrt((loc.x - balls[v].location.x) * (loc.x - balls[v].location.x) + (loc.y - balls[v].location.y) * (loc.y - balls[v].location.y));
+		if(delta < balls[v].radius){
             return v;
+        }else if(delta - balls[v].radius < min){
+            min = delta - balls[v].radius;
+            minId = v;
         }
     }
     
-    return -1; //no ball
+    return minId; 
 }
 
 function getClickStyle(){
@@ -444,6 +460,7 @@ document.onmousedown = function(event){
         if(clickR == 'delete'){
             if(selected == clicked){
                 selected=-1;
+                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
             }else if(selected>=clicked){
                 selected-=1;
             }
@@ -463,7 +480,10 @@ document.onmousedown = function(event){
             difference.normalize();
             difference.rotate(Math.PI/2);
             difference.mult(speed);
-
+            
+            //add the velocity of the object to be orbitted around
+            difference.add(balls[clicked].velocity);
+            
             //update selected's velocity
             balls[selected].velocity = difference;
             return;
@@ -622,38 +642,53 @@ var frame= function(){
     context.fillRect(0,0,canvas.width, canvas.height);
     
     
+    //draws the selection outline
+    if(selected!=-1){
+        balls[selected].selected(scale, timeScale * timeSteps, shift);
+    }
     
+    //render all balls
+    for(i=0;i<balls.length;i+=1){
+        balls[i].render(scale, shift);
+    }
     
     //find current mouse function
     var clickR = getClickStyle();
     
     if(clickR == 'create'){
-         context.fillStyle = "rgb(0, 255, 255)";
+        context.strokeStyle = "rgb(0, 255, 255)";
+        context.lineWidth = 2;
+        
         context.beginPath();
         
         context.arc(mouseLoc.x, mouseLoc.y, createRadius+2, 0, 2*Math.PI);
-        context.fill();
-              
-        context.fillStyle = "rgb(0, 0, 0)";
-        context.beginPath();
-                
-        context.arc(mouseLoc.x, mouseLoc.y, createRadius, 0, 2*Math.PI);
-        context.fill();
+        context.stroke();
                 
         }else if(clickR == 'delete'){
+            var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
+            if(mouseOver >=0){
+                //draw x on top of ball
+                var deleteLoc = convertToRel(balls[mouseOver].location);
                 
+                context.strokeStyle = "rgb(255, 0, 0)";
+                context.lineWidth = 5;
+                context.beginPath();
+                context.moveTo(deleteLoc.x - (balls[mouseOver].radius/scale + 10), deleteLoc.y - (balls[mouseOver].radius/scale + 10));
+                context.lineTo(deleteLoc.x + (balls[mouseOver].radius/scale + 10), deleteLoc.y + (balls[mouseOver].radius/scale + 10));
+
+                context.moveTo(deleteLoc.x + (balls[mouseOver].radius/scale + 10), deleteLoc.y - (balls[mouseOver].radius/scale + 10));
+                context.lineTo(deleteLoc.x - (balls[mouseOver].radius/scale + 10), deleteLoc.y + (balls[mouseOver].radius/scale + 10));
+                context.stroke();
+            }
+            
         }else if(clickR == 'copy'){
-            context.fillStyle = "rgb(0, 255, 255)";
+            context.strokeStyle = "rgb(0, 255, 255)";
+            context.lineWidth=2;
+            
             context.beginPath();
                 
             context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale +2, 0, 2*Math.PI);
-            context.fill();
-                
-            context.fillStyle = "rgb(0, 0, 0)";
-            context.beginPath();
-                
-            context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale, 0, 2*Math.PI);
-            context.fill();
+            context.stroke();
                 
         }else if(clickR == 'orbit'){
             var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
@@ -661,20 +696,16 @@ var frame= function(){
                 var diff = balls[selected].location.sub2(balls[mouseOver].location, balls[selected].location);
                  diff = diff.mag() / scale;
                     
-                var x_ = canvas.width/2 + (balls[mouseOver].location.x - shift.x)/scale;
-                var y_ = canvas.height/2 + (balls[mouseOver].location.y - shift.y)/scale;
+                var orbitTarget = convertToRel(balls[mouseOver].location);
                     
-                context.fillStyle = "rgb(0, 255, 255)";
-                context.beginPath();
-            
-                context.arc(x_, y_, diff +2, 0, 2*Math.PI);
-                context.fill();
-            
-                context.fillStyle = "rgb(0, 0, 0)";
-                context.beginPath();
+                context.strokeStyle = "rgb(0, 255, 255)";
+                context.lineWidth=2;
                 
-                context.arc(x_, y_, diff, 0, 2*Math.PI);
-                context.fill();
+                context.beginPath();
+            
+                context.arc(orbitTarget.x, orbitTarget.y, diff +2, 0, 2*Math.PI);
+                context.stroke();
+                
             }
         }else if(clickR == 'drag'){
             if(drag == -1){
@@ -686,16 +717,6 @@ var frame= function(){
             }
         }
 
-    
-    //draws the selection outline
-    if(selected!=-1){
-        balls[selected].selected(scale, timeScale * timeSteps, shift);
-    }
-    
-    //render all balls
-    for(i=0;i<balls.length;i+=1){
-        balls[i].render(scale, shift);
-    }
     
     if(mvRight && !mvLeft){
         shift.x += scale * 10;
