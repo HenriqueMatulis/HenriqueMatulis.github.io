@@ -253,19 +253,21 @@ function collision(ball1, ball2, timeStep){
 
 var balls = []; //array of all physics objects, behaves liek arraylist
 
-var i,z, s; //variables for for loops
 
 var selected= -1; //the ball that is currently selected, -1 if none
 
 var timeScale=10; //amount of seconds one cycle represents
 var timeSteps=50; //amount of cycles per frame of animation
 
+//camera stuff
 var scale = 600000; //1px: scale meters
 var shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale); //point where the screen is centered around
+var cameraLock = -1; //id for ball camera is locked on to 
 
 //mouse stuff
-var drag = -2; //what is being dragged currently (-1 is bg, -2 is nothing, 0 and above are balls)
+var drag = -1; //what is being dragged currently (-2 is bg, -1 is nothing, 0 and above are balls)
 var dragFoc = new Vector(0,0); //drag focus (where the dragging started)
+var selectStart;
 var dragClient = new Vector(0,0);
 var mouseLoc = new Vector(0,0);
 
@@ -289,9 +291,11 @@ function setup(){
     
     timeScale=10; //amount of seconds one cycle represents
     timeSteps=50; //amount of cycles per frame of animation
-
+    
+    //camera stuff
     scale = 600000; //1px: scale meters
     shift = new Vector(canvas.width/2 * scale, canvas.height/2 * scale); //point where the screen is centered around
+    cameraLock = -1;
 
     //mouse stuff
     drag = -2; //what is being dragged currently (-1 is bg, -2 is nothing, 0 and above are balls)
@@ -311,6 +315,7 @@ function setup(){
 function deleteAll(){
     "use strict";
     selected= -1;
+    cameraLock=-1;
     document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
@@ -350,7 +355,7 @@ function refreshAll(){
     if(document.activeElement.id !='scale'){
         document.getElementById('scale').value = scale.toExponential();
     }
-    if(selected==-1){
+    if(selected<0){
         return;
     }
     
@@ -406,6 +411,33 @@ function findBall(loc, give){
     return minId; 
 }
 
+//find ball near given rectangle
+function findBallInRect(corner1, corner2){
+    "use strict";
+    var temp;
+    if(corner1.x > corner2.x){
+        temp = corner2.x;
+        corner2.x=corner1.x;
+        corner1.x=temp;
+    }
+    
+    if(corner1.y > corner2.y){
+        temp = corner2.y;
+        corner2.y=corner1.y;
+        corner1.y=temp;
+    }
+    
+    var v, min, minId=-1;
+    for(v=0;v<balls.length; v+=1){
+        if(corner1.x < balls[v].location.x && corner2.x > balls[v].location.x && corner1.y < balls[v].location.y && corner2.y > balls[v].location.y && (!(min) || min> balls[v].radius)){
+           min= balls[v].radius;
+            minId = v;
+        }
+    }
+    return minId;
+    
+}
+
 function getClickStyle(){
     "use strict";
     var clickR = document.getElementsByName("click");
@@ -436,6 +468,7 @@ document.onmousedown = function(event){
     if(clicked >= 0){
         if(clickR == 'drag'){
                 drag=clicked;
+                cameraLock= -1;
                 return;
         }
         
@@ -464,6 +497,12 @@ document.onmousedown = function(event){
             }else if(selected>=clicked){
                 selected-=1;
             }
+            
+            if(cameraLock == clicked){
+                cameraLock=-1;
+            }else if(cameraLock>=clicked){
+                cameraLock-=1;
+            }
             balls.splice(clicked, 1);
             return;
         }
@@ -488,6 +527,19 @@ document.onmousedown = function(event){
             balls[selected].velocity = difference;
             return;
         }
+        
+        if(clickR == 'lock'){
+            cameraLock = clicked;
+            return;
+        }
+    }
+    if(clickR == 'select'){
+        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+        
+        selectStart = mouse;
+        selected = -2;
+        
+        return;
     }
     
     if(clickR == 'create'){
@@ -504,13 +556,24 @@ document.onmousedown = function(event){
         //the user did not select anything; wants to move camera around
         dragClient = new Vector(event.clientX, event.clientY);
         dragFoc = new Vector(shift.x, shift.y);
-        drag = -1;
+        drag = -2;
     }
 };
 
 document.onmouseup = function(event){
     "use strict";
-    drag = -2;
+    drag = -1;
+    if(selected == -2){
+        var mLoc = convertToAbs(new Vector(event.clientX, event.clientY));
+        selected = findBallInRect(selectStart, mLoc);
+         document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
+        refresh('mass');
+        refresh('radius');
+        refresh('x');
+        refresh('y');
+        refresh('vx');
+        refresh('vy');
+    }
     
 };
 
@@ -547,18 +610,22 @@ window.onkeydown = function(e){
     if(keyCode == 65 || keyCode ==37){
         //left arrow or a key, go left
         mvLeft = true;
+        cameraLock=-1;
         
     }else if(keyCode == 68 || keyCode ==39){
         //right arrow or d key, go right
         mvRight = true;
+        cameraLock=-1;
     }
     if(keyCode == 83 || keyCode ==40){
         //down arrow or s key, go down
         mvDown = true;
+        cameraLock=-1;
         
     }else if(keyCode == 87 || keyCode ==38){
         //up arrow or w key, go up
         mvUp = true;
+        cameraLock=-1;
         
     }
 };
@@ -614,6 +681,7 @@ function uInput(id){
 //frame is basically a while loop or draw loop
 var frame= function(){
     "use strict";
+    var s,i,z;
     for(s=0;s<timeSteps;s+=1){
         //calculate gravitational attractions
         for(i=0;i<balls.length-1; i+=1){
@@ -642,8 +710,27 @@ var frame= function(){
     context.fillRect(0,0,canvas.width, canvas.height);
     
     
+    if(cameraLock == -1){
+        if(mvRight && !mvLeft){
+            shift.x += scale * 10;
+        }else if(mvLeft && !mvRight){
+            shift.x -= scale * 10;
+        }
+    
+        if(mvUp && !mvDown){
+            shift.y -= scale * 10;
+        
+        }else if(mvDown && !mvUp){
+            shift.y += scale * 10;
+        
+        }
+    }else{
+        shift.x = balls[cameraLock].location.x;
+        shift.y = balls[cameraLock].location.y;
+    }
+    
     //draws the selection outline
-    if(selected!=-1){
+    if(selected >= 0){
         balls[selected].selected(scale, timeScale * timeSteps, shift);
     }
     
@@ -708,29 +795,27 @@ var frame= function(){
                 
             }
         }else if(clickR == 'drag'){
-            if(drag == -1){
+            if(drag == -2){
                 var mouse = new Vector((dragClient.x -mouseLoc.x)*scale, (dragClient.y -mouseLoc.y)*scale);
                 mouse.add(dragFoc);
                 shift=mouse;
             }else if(drag >=0){
                 balls[drag].location = convertToAbs(new Vector(mouseLoc.x, mouseLoc.y));
             }
+        }else if(clickR == 'select' && selected == -2){
+            context.beginPath();
+                    
+            context.strokeStyle = "rgb(0, 255, 255)";
+            context.lineWidth=2;
+            context.fillStyle = "rgba(0, 255, 255, 0.1)";
+            
+            var sSConv = convertToRel(selectStart);
+            context.rect(sSConv.x, sSConv.y, mouseLoc.x -sSConv.x, mouseLoc.y -sSConv.y);
+            context.stroke();
+            context.fill();
         }
 
     
-    if(mvRight && !mvLeft){
-        shift.x += scale * 10;
-    }else if(mvLeft && !mvRight){
-        shift.x -= scale * 10;
-    }
-    
-    if(mvUp && !mvDown){
-        shift.y -= scale * 10;
-        
-    }else if(mvDown && !mvUp){
-        shift.y += scale * 10;
-        
-    }
     
     animate(frame);
 };
