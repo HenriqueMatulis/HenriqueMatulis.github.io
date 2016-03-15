@@ -1,4 +1,4 @@
-/*jslint white: true, eqeq: true, nomen: true, vars: true*/
+/*jslint white: true, bitwise: true, eqeq: true, nomen: true, plusplus: true, vars: true*/
 
 //set up canvas animation
 var animate = window.requestAnimationFrame ||
@@ -254,10 +254,11 @@ function collision(ball1, ball2, timeStep){
 var balls = []; //array of all physics objects, behaves liek arraylist
 
 
-var selected= -1; //the ball that is currently selected, -1 if none
+var selected= []; //array of ids of balls currently being selected
+var selecting = false;
 
-var timeScale=10; //amount of seconds one cycle represents
-var timeSteps=50; //amount of cycles per frame of animation
+var timeScale=50; //amount of seconds one cycle represents
+var timeSteps=10; //amount of cycles per frame of animation
 
 //camera stuff
 var scale = 600000; //1px: scale meters
@@ -287,10 +288,11 @@ function setup(){
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
     
-    selected= -1; //the ball that is currently selected, -1 if none
+    selected= []; //array of ids of balls currently being selected
+    selecting = false;
     
-    timeScale=10; //amount of seconds one cycle represents
-    timeSteps=50; //amount of cycles per frame of animation
+    timeScale=50; //amount of seconds one cycle represents
+    timeSteps=10; //amount of cycles per frame of animation
     
     //camera stuff
     scale = 600000; //1px: scale meters
@@ -309,14 +311,14 @@ function setup(){
     balls[1].velocity.y = 471.66372201672100474412475024634;
     balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
     
-    document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
 }
 
 function deleteAll(){
     "use strict";
-    selected= -1;
+    selected= [];
     cameraLock=-1;
-    document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
@@ -324,29 +326,7 @@ function deleteAll(){
 }
 
 
-//refresh a specific textbox
-function refresh(id){
-    "use strict";
-    if(id == 'mass'){
-        document.getElementById('mass').value = balls[selected].mass.toExponential();
-    }else if(id == 'radius'){
-        document.getElementById('radius').value = balls[selected].radius.toExponential();
-    }else if(id == 'x'){
-        document.getElementById('x').value = balls[selected].location.x.toExponential();
-    }else if(id == 'y'){
-        document.getElementById('y').value = balls[selected].location.y.toExponential();
-    }else if(id == 'vx'){
-        document.getElementById('vx').value = balls[selected].velocity.x.toExponential();
-    }else if(id == 'vy'){
-        document.getElementById('vy').value = balls[selected].velocity.y.toExponential();
-    }else if(id =='timescale'){
-        document.getElementById(id).value = timeScale;
-    }else if(id =='steps'){
-        document.getElementById(id).value = timeSteps;
-    }else if(id =='scale'){
-        document.getElementById(id).value = scale.toExponential();
-    }
-}
+
 
 //refresh all textboxes that could change on one frame
 function refreshAll(){
@@ -355,22 +335,25 @@ function refreshAll(){
     if(document.activeElement.id !='scale'){
         document.getElementById('scale').value = scale.toExponential();
     }
-    if(selected<0){
+    
+    if(selected.length!=1){
+        document.getElementById('mass').innerHTML='N/A';
+        document.getElementById('radius').innerHTML='N/A';
+        document.getElementById('x').innerHTML='N/A';
+        document.getElementById('y').innerHTML='N/A';
+        document.getElementById('vx').innerHTML='N/A';
+        document.getElementById('vy').innerHTML='N/A';
         return;
     }
     
-    if(document.activeElement.id != 'x'){
-        document.getElementById('x').value = balls[selected].location.x.toExponential();
-    }
-    if(document.activeElement.id !='y'){
-        document.getElementById('y').value = balls[selected].location.y.toExponential();
-    }
-    if(document.activeElement.id !='vx'){
-        document.getElementById('vx').value = balls[selected].velocity.x.toExponential();
-    }
-    if(document.activeElement.id !='vy'){
-        document.getElementById('vy').value = balls[selected].velocity.y.toExponential();
-    }
+    
+    document.getElementById('mass').innerHTML = balls[selected[0]].mass.toExponential();
+    document.getElementById('radius').innerHTML = balls[selected[0]].radius.toExponential();
+    document.getElementById('x').innerHTML = balls[selected[0]].location.x.toExponential();
+    document.getElementById('y').innerHTML = balls[selected[0]].location.y.toExponential();
+    document.getElementById('vx').innerHTML = balls[selected[0]].velocity.x.toExponential();
+    document.getElementById('vy').innerHTML = balls[selected[0]].velocity.y.toExponential();
+    
     
     
 }
@@ -411,8 +394,8 @@ function findBall(loc, give){
     return minId; 
 }
 
-//find ball near given rectangle
-function findBallInRect(corner1, corner2){
+//find balls in given rectangle
+function findBallsInRect(corner1, corner2){
     "use strict";
     var temp;
     if(corner1.x > corner2.x){
@@ -427,15 +410,51 @@ function findBallInRect(corner1, corner2){
         corner1.y=temp;
     }
     
-    var v, min, minId=-1;
+    var v, ids=[];
     for(v=0;v<balls.length; v+=1){
-        if(corner1.x < balls[v].location.x && corner2.x > balls[v].location.x && corner1.y < balls[v].location.y && corner2.y > balls[v].location.y && (!(min) || min> balls[v].radius)){
-           min= balls[v].radius;
-            minId = v;
+        if(corner1.x < balls[v].location.x && corner2.x > balls[v].location.x && corner1.y < balls[v].location.y && corner2.y > balls[v].location.y){
+            ids.push(v);
         }
     }
-    return minId;
+    return ids;
     
+}
+
+//finds the location of a number in a given array, binary search
+function binarySearch(array, target){
+    "use strict";
+    //min inclusive, max exclusive
+    var min=0, max=array.length;
+    
+    while(min < max){
+        var mid = (min+max) >> 1;
+        if(target > array[mid]){
+            min = mid+1;
+        }else if(target < array[mid] ){
+            max = mid;
+        } else if(array[mid] == target){
+            return mid;
+        }
+    }
+    return -1;
+}
+
+//index of where to insert a number into a sorted list
+function binaryInsert(array, target){
+    "use strict";
+    //min inclusive, max exclusive
+    var min=0, max=array.length;
+    while(min < max){
+        var mid = (min+max) >> 1;
+        if(target > array[mid]){
+            min = mid+1;
+        }else if(target < array[mid] ){
+            max = mid;
+        }else if(array[mid] == target){
+            return mid;
+        }
+    }
+    return min;
 }
 
 function getClickStyle(){
@@ -464,6 +483,7 @@ document.onmousedown = function(event){
     var clicked = findBall(mouse, 20 * scale);
     //find what function clicking is set to
     var clickR = getClickStyle();
+    var i;
      
     if(clicked >= 0){
         if(clickR == 'drag'){
@@ -473,31 +493,46 @@ document.onmousedown = function(event){
         }
         
         if(clickR == 'select'){
-            if(selected === clicked){
-                selected = -1;
-                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
-                return;          
+            if(selected.length > 0){
+            i = binarySearch(selected, clicked);
+                if(i >= 0){
+                    if(selected[i] === clicked){
+                        selected.splice(i, 1);
+                        if(selected.length == 0){
+                            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                        }
+                        return;          
+                    }
+                }
             }
-        
-            selected = clicked;
-            document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
-            refresh('mass');
-            refresh('radius');
-            refresh('x');
-            refresh('y');
-            refresh('vx');
-            refresh('vy');
+            
+            if(selected.length > 0){
+                selected.splice(binaryInsert(selected, clicked), 0, clicked);
+            }else{
+                selected = [clicked];
+            }
+            
+            
+            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
+            refreshAll();
             return;
         }
         
         if(clickR == 'delete'){
-            if(selected == clicked){
-                selected=-1;
-                document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
-            }else if(selected>=clicked){
-                selected-=1;
+            var index=-1;
+            for(i=0;i<selected.length;i++){
+                if(selected[i] == clicked){
+                    index =i;
+                }else if(selected[i]>clicked){
+                    selected[i]-=1;
+                }
             }
-            
+            if(index>=0){
+                selected.splice(index, 1);
+                if(selected.length == 0){
+                        document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                    }
+            }
             if(cameraLock == clicked){
                 cameraLock=-1;
             }else if(cameraLock>=clicked){
@@ -507,24 +542,26 @@ document.onmousedown = function(event){
             return;
         }
         
-        if(clickR == 'orbit' && clicked != selected){
+        if(clickR == 'orbit' && binarySearch(selected, clicked) == -1){
             //make vector that points from selected to clicked
-            var difference = balls[clicked].location.sub2(balls[clicked].location, balls[selected].location);
+            for(i=0;i<selected.length; i++){
+                var difference = balls[clicked].location.sub2(balls[clicked].location, balls[selected[i]].location);
             
-            //find orbital speed at given distance (circular)
-            var speed = Math.sqrt(6.67384e-11 * balls[clicked].mass / difference.mag());
+                //find orbital speed at given distance (circular)
+                var speed = Math.sqrt(6.67384e-11 * balls[clicked].mass / difference.mag());
             
 
-            //translate speed into vector
-            difference.normalize();
-            difference.rotate(Math.PI/2);
-            difference.mult(speed);
+                //translate speed into vector
+                difference.normalize();
+                difference.rotate(Math.PI/2);
+                difference.mult(speed);
             
-            //add the velocity of the object to be orbitted around
-            difference.add(balls[clicked].velocity);
+                //add the velocity of the object to be orbitted around
+                difference.add(balls[clicked].velocity);
             
-            //update selected's velocity
-            balls[selected].velocity = difference;
+                //update selected's velocity
+                balls[selected[i]].velocity = difference;
+            }
             return;
         }
         
@@ -534,10 +571,8 @@ document.onmousedown = function(event){
         }
     }
     if(clickR == 'select'){
-        document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
-        
         selectStart = mouse;
-        selected = -2;
+        selecting = true;
         
         return;
     }
@@ -548,7 +583,24 @@ document.onmousedown = function(event){
     }
     
     if(clickR == 'copy'){
-        balls.push(new Ball(mouse.x , mouse.y, balls[selected].radius, balls[selected].mass, balls[selected].hue, balls[selected].sat, balls[selected].brig));
+        //find average location
+        var avrg = new Vector(0,0);
+        for(i=0;i< selected.length; i ++){
+            avrg.x+= balls[selected[i]].location.x;
+            avrg.y+= balls[selected[i]].location.y;
+        }
+        avrg.div(selected.length);
+            
+        //print highlights, where the average location is the mouse
+        var loc;
+        for(i=0;i< selected.length; i++){
+            loc = avrg.sub2(balls[selected[i]].location, avrg);
+            loc.add(convertToAbs(mouseLoc));
+            var temp = new Ball(loc.x , loc.y, balls[selected[i]].radius, balls[selected[i]].mass, balls[selected[i]].hue, balls[selected[i]].sat, balls[selected[i]].brig);
+            temp.velocity.x = balls[selected[i]].velocity.x;
+            temp.velocity.y = balls[selected[i]].velocity.y;
+            balls.push(temp);
+        }
         return;
     }
     
@@ -563,16 +615,29 @@ document.onmousedown = function(event){
 document.onmouseup = function(event){
     "use strict";
     drag = -1;
-    if(selected == -2){
+    if(selecting){
+        selecting = false;
         var mLoc = convertToAbs(new Vector(event.clientX, event.clientY));
-        selected = findBallInRect(selectStart, mLoc);
-         document.getElementById('mass').disabled =document.getElementById('radius').disabled= document.getElementById('x').disabled = document.getElementById('y').disabled = document.getElementById('vx').disabled =  document.getElementById('vy').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
-        refresh('mass');
-        refresh('radius');
-        refresh('x');
-        refresh('y');
-        refresh('vx');
-        refresh('vy');
+        var temp = findBallsInRect(selectStart, mLoc);
+        if(temp.length <=0){
+            selected = [];
+            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+            return;
+        }
+        
+        var i;
+        for(i=0; i< temp.length; i++){
+            var insertLoc = binaryInsert(selected, temp[i]);
+            if(selected[insertLoc] == temp[i]){
+                selected.splice(insertLoc, 1);
+            }else{
+                selected.splice(insertLoc, 0, temp[i]);
+            }
+        }
+        document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = selected.length>=0? false: true;
+        
+        refreshAll();
+        
     }
     
 };
@@ -606,6 +671,11 @@ canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
 
 window.onkeydown = function(e){
     "use strict";
+    
+    if(document.activeElement.id){
+        return;
+    }
+    
     var keyCode = e.keyCode || e.which;
     if(keyCode == 65 || keyCode ==37){
         //left arrow or a key, go left
@@ -657,24 +727,74 @@ window.onkeyup = function(e){
 //handles user input through textboxes, runs on enter
 function uInput(id){
     "use strict";
+    var i;
+    var temp;
     if(id == "timescale"){
-        timeScale=parseFloat(document.getElementById(id).value);
+        temp=parseFloat(document.getElementById(id).value);
+        if(!temp){
+            return;
+        }
+        timeScale=temp;
     }else if(id =="steps"){
-        timeSteps=parseFloat(document.getElementById(id).value);
+        temp=parseInt(document.getElementById(id).value, 10);
+        if(!temp && temp != 0){
+            return;
+        }
+        timeSteps=temp;
     }else if(id =="scale"){
-        scale=parseFloat(document.getElementById(id).value);
+        temp=parseFloat(document.getElementById(id).value);
+        if(!temp){
+            return;
+        }
+        scale = temp;
     }else if(id =="mass"){
-        balls[selected].mass=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('massInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+            balls[selected[i]].mass+=temp;
+        }
     }else if(id =="radius"){
-        balls[selected].radius=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('radiusInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+            balls[selected[i]].radius+= temp;
+        }
     }else if(id =="x"){
-        balls[selected].location.x=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('xInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+            balls[selected[i]].location.x+=temp;
+        }
     }else if(id =="y"){
-        balls[selected].location.y=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('yInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+            balls[selected[i]].location.y+= temp;
+        }
     }else if(id =="vx"){
-        balls[selected].velocity.x=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('vxInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+            balls[selected[i]].velocity.x+=temp;
+        }
     }else if(id =="vy"){
-        balls[selected].velocity.y=parseFloat(document.getElementById(id).value);
+        temp = parseFloat(document.getElementById('vyInc').value);
+        if(!temp){
+            return;
+        }
+        for(i=0; i<selected.length; i++){
+        balls[selected[i]].velocity.y+=temp;
+        }
     }
 }
 
@@ -729,9 +849,41 @@ var frame= function(){
         shift.y = balls[cameraLock].location.y;
     }
     
+    //draw reference grid
+    if(document.getElementById('grid').checked){
+        
+        context.strokeStyle = "rgba(0, 255, 255, 0.1)";
+        context.lineWidth=2;
+        
+        var gridShift = new Vector( ( (shift.x / scale) )%canvas.width , (shift.y / scale) % canvas.height);
+        
+        var lines = 8;//Math.floor(canvas.width / (500 * 6e5/ scale));
+        
+        
+        
+        for(i=0;i<lines;i++){
+            var x_ = (i * canvas.width/lines - gridShift.x) % canvas.width;
+            if(x_ < 0){
+                x_ = canvas.width+x_;
+            }
+
+            var y_ = (i * canvas.height/lines - gridShift.y) % canvas.height;
+            if(y_ < 0){
+                y_ = canvas.height+y_;
+            }
+            
+            context.moveTo(x_, 0);
+            context.lineTo(x_, canvas.height);
+            
+            context.moveTo(0, y_);
+            context.lineTo(canvas.width, y_);
+        }
+        context.stroke();
+    }
+    
     //draws the selection outline
-    if(selected >= 0){
-        balls[selected].selected(scale, timeScale * timeSteps, shift);
+    for(i=0; i<selected.length; i++){
+        balls[selected[i]].selected(scale, timeScale * timeSteps, shift);
     }
     
     //render all balls
@@ -772,26 +924,44 @@ var frame= function(){
             context.strokeStyle = "rgb(0, 255, 255)";
             context.lineWidth=2;
             
-            context.beginPath();
-                
-            context.arc(mouseLoc.x, mouseLoc.y, balls[selected].radius/scale +2, 0, 2*Math.PI);
-            context.stroke();
-                
-        }else if(clickR == 'orbit'){
-            var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
-            if(mouseOver >=0 && mouseOver != selected){
-                var diff = balls[selected].location.sub2(balls[mouseOver].location, balls[selected].location);
-                 diff = diff.mag() / scale;
-                    
-                var orbitTarget = convertToRel(balls[mouseOver].location);
-                    
-                context.strokeStyle = "rgb(0, 255, 255)";
-                context.lineWidth=2;
+            //find average location
+            var avrg = new Vector(0,0);
+            for(i=0;i< selected.length; i ++){
+                avrg.x+= balls[selected[i]].location.x;
+                avrg.y+= balls[selected[i]].location.y;
+            }
+            avrg.div(selected.length);
+            
+            //print highlights, where the average location is the mouse
+            var loc;
+            for(i=0;i< selected.length; i++){
+                loc = avrg.sub2(balls[selected[i]].location, avrg);
+                loc.add(convertToAbs(mouseLoc));
+                loc = convertToRel(loc);
                 
                 context.beginPath();
-            
-                context.arc(orbitTarget.x, orbitTarget.y, diff +2, 0, 2*Math.PI);
+                
+                context.arc(loc.x, loc.y, balls[selected[i]].radius/scale +2, 0, 2*Math.PI);
                 context.stroke();
+            }
+                
+        }else if(clickR == 'orbit'){
+            mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
+            if(mouseOver >=0 && binarySearch(selected, mouseOver) == -1){
+                for(i =0; i< selected.length; i++){
+                    var diff = balls[selected[i]].location.sub2(balls[mouseOver].location, balls[selected[i]].location);
+                    diff = diff.mag() / scale;
+                    
+                    var orbitTarget = convertToRel(balls[mouseOver].location);
+                    
+                    context.strokeStyle = "rgb(0, 255, 255)";
+                    context.lineWidth=2;
+                    
+                    context.beginPath();
+            
+                    context.arc(orbitTarget.x, orbitTarget.y, diff +2, 0, 2*Math.PI);
+                    context.stroke();
+                }
                 
             }
         }else if(clickR == 'drag'){
@@ -802,7 +972,7 @@ var frame= function(){
             }else if(drag >=0){
                 balls[drag].location = convertToAbs(new Vector(mouseLoc.x, mouseLoc.y));
             }
-        }else if(clickR == 'select' && selected == -2){
+        }else if(clickR == 'select' && selecting){
             context.beginPath();
                     
             context.strokeStyle = "rgb(0, 255, 255)";
@@ -814,7 +984,7 @@ var frame= function(){
             context.stroke();
             context.fill();
         }
-
+    
     
     
     animate(frame);

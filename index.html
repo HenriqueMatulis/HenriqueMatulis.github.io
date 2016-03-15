@@ -13,10 +13,10 @@
         <div class='group'>
             <!-- use onblur='/' to undo unsubmitted changes-->
             <span title="Little performance impact, decreases accuracy"><p class = 'decription'>Timescale per step</p></span>
-            <input id = 'timescale' value='10'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
+            <input id = 'timescale' value='50'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
                 
             <span title="Doesn't affect accuracy but decreases performance"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
-            <input id = 'steps' value='50'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
+            <input id = 'steps' value='10'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
                 
             <p class = 'decription'>Scale (x meters : 1px)</p>
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
@@ -26,28 +26,35 @@
             <p class = 'decription'>Trace</p>
             <input id = 'trace' type="range"  min="0" max="10" autocomplete='off' value='0' step='0.01'>
             
-            <!--<input id = 'trace' type ='checkbox' value='false' autocomplete='off'/> -->
+            <p class = 'decription'>Reference Grid</p>
+            <input id = 'grid' type="checkbox"  autocomplete='off'>
+            
         </div>
         <p id='title'>Selection Options</p>
         <div>
-            
-            <p class = 'decription'> mass (kg)</p>
-            <input id = 'mass' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off' onblur='refresh("mass")'/>
+            <p class = 'decription'> mass (kg): </p> 
+            <p class = 'decription' id="mass">N/A</p>
+            <input id = 'massInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off'/> <input type="button" value="Add" disabled id='massAdd' onclick='uInput("mass")'/>
                 
-            <p class = 'decription'> radius (m)</p>
-            <input id = 'radius' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off' onblur='refresh("radius")'/>
+            <p class = 'decription'> radius (m): </p> 
+            <p class = 'decription' id="radius">N/A</p>
+            <input id = 'radiusInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off'/> <input type="button" value="Add" disabled id='radiusAdd' onclick='uInput("radius")'/>
                 
-            <p class = 'decription'> x location (m)</p>
-            <input id = 'x' disabled  onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off' onblur='refresh("x")'/>
+            <p class = 'decription'> x location (m): </p> 
+            <p class = 'decription' id="x">N/A</p>
+            <input id = 'xInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off'/><input type="button" value="Add" disabled id='xAdd' onclick='uInput("x")'/>
                 
-            <p class = 'decription'> y location (m)</p>
-            <input id = 'y' disabled  onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off' onblur='refresh("y")'/>
+            <p class = 'decription'> y location (m): </p> 
+            <p class = 'decription' id="y">N/A</p>
+            <input id = 'yInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off'/><input type="button" value="Add" disabled id='yAdd' onclick='uInput("y")'/>
                 
-            <p class = 'decription'>x velocity (m/s)</p>
-            <input id = 'vx' disabled  onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off' onblur='refresh("vx")'/>
+            <p class = 'decription'>x velocity (m/s): </p> 
+            <p class = 'decription' id="vx">N/A</p>
+            <input id = 'vxInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off'/><input type="button" value="Add" disabled id='vxAdd' onclick='uInput("vx")'/>
                 
-            <p class = 'decription'>y velocity (m/s)</p>
-            <input id = 'vy' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off' onblur='refresh("vy")'/>
+            <p class = 'decription'>y velocity (m/s): </p> 
+            <p class = 'decription' id="vy">N/A</p>
+            <input id = 'vyInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off'/><input type="button" value="Add" disabled id='vyAdd' onclick='uInput("vy")'/>
         </div>
          <p id='title'>Click Functions</p>
         <div>
