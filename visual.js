@@ -731,7 +731,7 @@ function uInput(id){
     var temp;
     if(id == "timescale"){
         temp=parseFloat(document.getElementById(id).value);
-        if(!temp){
+        if(!temp && temp != 0){
             return;
         }
         timeScale=temp;
