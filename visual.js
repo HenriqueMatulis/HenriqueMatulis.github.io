@@ -1,4 +1,4 @@
-/*jslint white: true, bitwise: true, eqeq: true, nomen: true, plusplus: true, vars: true*/
+/*jslint white: true, bitwise: true, eqeq: true, nomen: true, plusplus: true, vars: true, maxerr: 50*/
 
 //set up canvas animation
 var animate = window.requestAnimationFrame ||
@@ -134,7 +134,7 @@ function Ball(xx,yy, rad, m, hu_, sa_, br_){
     //render the balls selected outline, and its velocity vector
     this.selected= function(s, tS, f){
         
-        context.fillStyle = "rgb(0, 255, 255)";
+        context.fillStyle = "hsl(180, 100%, 50%)";
         context.beginPath();
         var x_ = canvas.width/2 + (this.location.x - f.x)/s;
         var y_ = canvas.height/2 + (this.location.y - f.y)/s;
@@ -276,10 +276,14 @@ var mouseLoc = new Vector(0,0);
 var createRadius=20;
 
 var mvUp=false, mvDown=false, mvLeft=false, mvRight=false;
-balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
-balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
-balls[1].velocity.y = 471.66372201672100474412475024634;
-balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
+var templateArray = JSON.parse('[{"location":{"x":390375813.4283814,"y":219649325.32870263},"velocity":{"x":-0.06854915785755715,"y":0.018033897792559872},"acceleration":{"x":4.815132497341387e-27,"y":-1.57877719196864e-26},"force":{"x":0,"y":0},"radius":37800000,"mass":1e+24,"hue":0,"sat":0,"brig":100},{"location":{"x":400325197.9349472,"y":129255979.44430628},"velocity":{"x":-852.3261244973937,"y":-94.35202595499341},"acceleration":{"x":-0.0008904985438345006,"y":0.008020913331357597},"force":{"x":0,"y":0},"radius":3133982.0278660464,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":438301929.1411347,"y":108867945.44157909},"velocity":{"x":-682.5962321020429,"y":-295.547850439235},"acceleration":{"x":-0.001821432141578731,"y":0.004203137515484569},"force":{"x":0,"y":0},"radius":5745633.717754418,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":436767898.731582,"y":78442341.10834798},"velocity":{"x":-636.6493655213825,"y":-209.54336838682468},"acceleration":{"x":-0.0009442435895786485,"y":0.002869699034807473},"force":{"x":0,"y":0},"radius":7573789.900676278,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":553401124.9460012,"y":116159922.231528},"velocity":{"x":-315.2924417744347,"y":-496.35720904665214},"acceleration":{"x":-0.001511414414242425,"y":0.0009588089560354847},"force":{"x":0,"y":0},"radius":8879615.745620465,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":540127429.1091106,"y":43469398.30425339},"velocity":{"x":-409.46441087907004,"y":-347.98025426100764},"acceleration":{"x":-0.0008086733453496268,"y":0.0009509409130682161},"force":{"x":0,"y":0},"radius":9924276.421575813,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":230841560.22397688,"y":446861869.63165855},"velocity":{"x":401.08527817698473,"y":281.806671088706},"acceleration":{"x":0.0004976964640378277,"y":-0.0007085652687514344},"force":{"x":0,"y":0},"radius":11491267.435508836,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":75379528.81600703,"y":324239602.4215844},"velocity":{"x":141.10595785513323,"y":425.62754499657564},"acceleration":{"x":0.0005749958338054787,"y":-0.00019083338461743784},"force":{"x":0,"y":0},"radius":12797093.280453023,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":121928027.30828953,"y":522472579.8158646},"velocity":{"x":303.76527569935826,"y":269.44120784255944},"acceleration":{"x":0.00027037033485793996,"y":-0.0003049303430024443},"force":{"x":0,"y":0},"radius":12797093.280453023,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":761146662.0150483,"y":-68783008.42846324},"velocity":{"x":-231.50258943946045,"y":-297.48501357215616},"acceleration":{"x":-0.00023873768122951343,"y":0.0001856895352170635},"force":{"x":0,"y":0},"radius":13841753.95640837,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":205483016.48647097,"y":729952582.1138659},"velocity":{"x":329.5842001373242,"y":119.51276853910733},"acceleration":{"x":0.00007718734523661395,"y":-0.00021299374860775554},"force":{"x":0,"y":0},"radius":13841753.95640837,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":18650073.975305673,"y":-290689525.55579114},"velocity":{"x":-262.89510429862406,"y":191.4151990132146},"acceleration":{"x":0.00009856666937388787,"y":0.00013533591831232686},"force":{"x":0,"y":0},"radius":15408744.970341394,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":930276178.7094955,"y":-252905881.2685089},"velocity":{"x":-200.93246722043062,"y":-229.48624934300636},"acceleration":{"x":-0.00009755670587066033,"y":0.00008538052260593732},"force":{"x":0,"y":0},"radius":15408744.970341394,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":1152896270.36551,"y":447383274.622706},"velocity":{"x":82.81361614516625,"y":-277.45850728239805},"acceleration":{"x":-0.00010097608908810625,"y":-0.000030161466721875917},"force":{"x":0,"y":0},"radius":17498066.32225209,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":747722593.7468412,"y":1026368719.0366613},"velocity":{"x":251.39770858419234,"y":-111.35381996844133},"acceleration":{"x":-0.00003471870598847578,"y":-0.00007838495482224806},"force":{"x":0,"y":0},"radius":19065057.336185116,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":53043942.19075274,"y":1142331698.6294036},"velocity":{"x":244.71982409822172,"y":89.5325007923426},"acceleration":{"x":0.000023746118050316717,"y":-0.00006494590065480331},"force":{"x":0,"y":0},"radius":25855351.72989488,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":-502641391.25328916,"y":840376420.420038},"velocity":{"x":141.3081962454026,"y":203.43967331554367},"acceleration":{"x":0.000046333587268552003,"y":-0.000032204435769365605},"force":{"x":0,"y":0},"radius":32384480.954615813,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":-837746565.2498229,"y":195075521.8411336},"velocity":{"x":-4.741814868692376,"y":233.06755170151106},"acceleration":{"x":0.00004422236678868363,"y":8.856957450981379e-7},"force":{"x":0,"y":0},"radius":37085453.99641488,"mass":1,"hue":0,"sat":0,"brig":100}]');
+
+var ii, bb;
+for(ii=0;ii<templateArray.length;ii++){
+        bb = new Ball(templateArray[ii].location.x, templateArray[ii].location.y, templateArray[ii].radius, templateArray[ii].mass, templateArray[ii].hue, templateArray[ii].sat, templateArray[ii].brig);
+        bb.velocity = templateArray[ii].velocity;
+        balls.push(bb);
+}
 
 function setup(){
     "use strict";
@@ -306,10 +310,6 @@ function setup(){
     
     balls=[];
     mvUp = mvDown = mvLeft = mvRight = false;
-    balls.push(new Ball(scale * canvas.width/2 ,scale * canvas.height/2,scale * 63, 1e24,0,0,100));
-    balls.push(new Ball(scale * 900 ,scale * 500,scale * 14, 1e20,0,0,100));
-    balls[1].velocity.y = 471.66372201672100474412475024634;
-    balls.push(new Ball(scale * 950 ,scale * 500,scale * 5, 1, 0,0,100));
     
     document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
 }
@@ -318,14 +318,55 @@ function deleteAll(){
     "use strict";
     selected= [];
     cameraLock=-1;
-    document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    //document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
     balls=[];
 }
 
+function saveToFile(){
+    "use strict";
+    var blob = new Blob([JSON.stringify(balls)]);
+    var d = new Date();
+    saveAs(blob, "gravSim_"+d.getTime());
+}
 
+function ballsFromString(str){
+    "use strict";
+    
+    var tempArray = JSON.parse(str);
+    if(!tempArray){
+        return;
+    }
+    deleteAll();
+    var i, b;
+    for(i=0;i<tempArray.length;i++){
+        b = new Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass, tempArray[i].hue, tempArray[i].sat, tempArray[i].brig);
+        b.velocity = tempArray[i].velocity;
+        balls.push(b);
+    }
+}
+
+
+
+function loadFromFile(){
+    "use strict";
+    var btn = document.getElementById('load');
+    var file = btn.files[0];
+    if(!file){
+        return;
+    }
+    
+    var reader = new FileReader();
+    
+    //runs when reader is finished loading
+    reader.onload = function(e) {
+        ballsFromString(e.target.result);
+    };
+    
+    reader.readAsText(file);
+}
 
 
 //refresh all textboxes that could change on one frame
@@ -857,7 +898,7 @@ var frame= function(){
         
         var gridShift = new Vector( ( (shift.x / scale) )%canvas.width , (shift.y / scale) % canvas.height);
         
-        var lines = 8;//Math.floor(canvas.width / (500 * 6e5/ scale));
+        var lines = 10;//Math.floor(canvas.width / (500 * 6e5/ scale));
         
         
         
@@ -882,6 +923,7 @@ var frame= function(){
     }
     
     //draws the selection outline
+    context.beginPath();
     for(i=0; i<selected.length; i++){
         balls[selected[i]].selected(scale, timeScale * timeSteps, shift);
     }
@@ -893,7 +935,7 @@ var frame= function(){
     
     //find current mouse function
     var clickR = getClickStyle();
-    
+    var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
     if(clickR == 'create'){
         context.strokeStyle = "rgb(0, 255, 255)";
         context.lineWidth = 2;
@@ -904,7 +946,6 @@ var frame= function(){
         context.stroke();
                 
         }else if(clickR == 'delete'){
-            var mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
             if(mouseOver >=0){
                 //draw x on top of ball
                 var deleteLoc = convertToRel(balls[mouseOver].location);
@@ -946,7 +987,6 @@ var frame= function(){
             }
                 
         }else if(clickR == 'orbit'){
-            mouseOver = findBall(convertToAbs(new Vector(mouseLoc.x, mouseLoc.y)), 20*scale);
             if(mouseOver >=0 && binarySearch(selected, mouseOver) == -1){
                 for(i =0; i< selected.length; i++){
                     var diff = balls[selected[i]].location.sub2(balls[mouseOver].location, balls[selected[i]].location);

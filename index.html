@@ -6,6 +6,7 @@
 <body>
     
     <canvas id='myCanvas'></canvas>
+    <script src='FileSaver.js'></script>
     <script src='visual.js'></script> 
     
     <div id='menu'>
@@ -22,6 +23,8 @@
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
             
             <p align = 'center'><input type="button" value='Reset' onclick='setup()'> <input type="button" value='Clear' onclick="deleteAll()"></p>
+            <p align = 'center'><input type="button" value='Save' onclick='saveToFile()'> </p>
+            <input type="file" value='Load' onchange='loadFromFile()' id='load'>
             
             <p class = 'decription'>Trace</p>
             <input id = 'trace' type="range"  min="0" max="10" autocomplete='off' value='0' step='0.01'>
