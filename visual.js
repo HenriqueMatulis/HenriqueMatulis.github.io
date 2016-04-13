@@ -293,7 +293,7 @@ function deleteAll(){
     "use strict";
     selected= [];
     cameraLock=-1;
-    //document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
@@ -347,7 +347,7 @@ function setup(){
     
     mvUp = mvDown = mvLeft = mvRight = false;
     
-    document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     
     ballsFromString(templateString);
 }
@@ -542,7 +542,7 @@ document.onmousedown = function(event){
                     if(selected[i] === clicked){
                         selected.splice(i, 1);
                         if(selected.length == 0){
-                            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                            document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
                         }
                         return;          
                     }
@@ -556,7 +556,7 @@ document.onmousedown = function(event){
             }
             
             
-            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
+            document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
             refreshAll();
             return;
         }
@@ -573,7 +573,7 @@ document.onmousedown = function(event){
             if(index>=0){
                 selected.splice(index, 1);
                 if(selected.length == 0){
-                        document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                        document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
                     }
             }
             if(cameraLock == clicked){
@@ -664,7 +664,7 @@ document.onmouseup = function(event){
         var temp = findBallsInRect(selectStart, mLoc);
         if(temp.length <=0){
             selected = [];
-            document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+            document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
             return;
         }
         
@@ -677,7 +677,7 @@ document.onmouseup = function(event){
                 selected.splice(insertLoc, 0, temp[i]);
             }
         }
-        document.getElementById('massInc').disabled = document.getElementById('massAdd').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusAdd').disabled = document.getElementById('xInc').disabled = document.getElementById('xAdd').disabled = document.getElementById('yInc').disabled = document.getElementById('yAdd').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxAdd').disabled = document.getElementById('vyInc').disabled = document.getElementById('vyAdd').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = selected.length>=0? false: true;
+        document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = selected.length>=0? false: true;
         
         refreshAll();
         
@@ -796,7 +796,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-            balls[selected[i]].mass+=temp;
+            balls[selected[i]].mass=temp;
         }
     }else if(id =="radius"){
         temp = parseFloat(document.getElementById('radiusInc').value);
@@ -804,7 +804,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-            balls[selected[i]].radius+= temp;
+            balls[selected[i]].radius= temp;
         }
     }else if(id =="x"){
         temp = parseFloat(document.getElementById('xInc').value);
@@ -812,7 +812,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-            balls[selected[i]].location.x+=temp;
+            balls[selected[i]].location.x=temp;
         }
     }else if(id =="y"){
         temp = parseFloat(document.getElementById('yInc').value);
@@ -820,7 +820,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-            balls[selected[i]].location.y+= temp;
+            balls[selected[i]].location.y= temp;
         }
     }else if(id =="vx"){
         temp = parseFloat(document.getElementById('vxInc').value);
@@ -828,7 +828,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-            balls[selected[i]].velocity.x+=temp;
+            balls[selected[i]].velocity.x=temp;
         }
     }else if(id =="vy"){
         temp = parseFloat(document.getElementById('vyInc').value);
@@ -836,7 +836,7 @@ function uInput(id){
             return;
         }
         for(i=0; i<selected.length; i++){
-        balls[selected[i]].velocity.y+=temp;
+        balls[selected[i]].velocity.y=temp;
         }
     }
 }
