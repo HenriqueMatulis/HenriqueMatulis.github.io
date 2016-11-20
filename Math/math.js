@@ -6,7 +6,7 @@ var animate = window.requestAnimationFrame ||
   window.mozRequestAnimationFrame ||
   function(callback) {
     "use strict";
-    window.setTimeout(callback, 1000 / 2); 
+    window.setTimeout(callback, 1000 / 60); 
   };
 
 
@@ -49,25 +49,27 @@ function format_add(strs, strict){
     
 var start;
 var equation = "";
-var equation2 = "";
-var result = Math.floor(Math.random() * 1000) + 6;
+var result ;//= Math.floor(Math.random() * 1000) + 6;
 var i = 0;
 var dir = 1;
 
 function setup(){
     "use strict";
-    start = new Date().getTime() + 127;
+    
+
+    start = new Date().getTime() + 10;
+    
+    result = (i+1);
     
     var nums = createAdd(result, i);
-    var nums2 = createAdd(result, i);
     equation = format_add(nums, false);
-    equation2 = format_add(nums2, false);
+    
     i+=dir;
+    
     if(i >= 10){
         dir = -dir;
     }else if (i <=0){
         dir = -dir;
-        result = Math.floor(Math.random() * 1000) + 6;
     }
     
 }
@@ -77,12 +79,18 @@ setup();
 var frame= function(){
     "use strict";
     var t = new Date().getTime();
-    //document.getElementById('timer').innerHTML = Math.round((start - t) / 10) / 100;
+    document.getElementById('timer').innerHTML = Math.max(Math.round((start - t) / 100) / 10, 0);
     
     if((start - t)  <= 0){
         setup();
-        
-        document.getElementById('math').innerHTML = '<p>'+ equation + " = " + equation2 +'</p>' + document.getElementById('math').innerHTML;
+        document.getElementById('old').innerHTML = document.getElementById('new').innerHTML + document.getElementById('old').innerHTML;
+        document.getElementById('old2').innerHTML = document.getElementById('new').innerHTML + document.getElementById('old2').innerHTML;
+        if (document.getElementById('old').innerHTML.length > 1500){
+            document.getElementById('old').innerHTML = document.getElementById('old').innerHTML.slice(0, 1000);
+            document.getElementById('old2').innerHTML = document.getElementById('old2').innerHTML.slice(0, 1000);
+        }
+        document.getElementById('new').innerHTML = '<p>'+ equation + " = " + result +'</p>';
+
     }
     
     
