@@ -380,7 +380,7 @@ function refreshAll(){
         document.getElementById('scale').value = scale.toExponential();
     }
     
-    if(selected.length!=1){
+    if(selected.length<1){
         document.getElementById('mass').value='N/A';
         document.getElementById('radius').value='N/A';
         document.getElementById('x').value='N/A';
@@ -390,21 +390,54 @@ function refreshAll(){
         return;
     }
     
+    if(selected.length>1){
+        if (document.activeElement.id != 'mass' && document.activeElement.id != 'massSet'){
+            document.getElementById('mass').value = 'N/A';
+        }
+        
+        if (document.activeElement.id != 'radius' && document.activeElement.id != 'radiusSet'){
+            document.getElementById('radius').value = 'N/A';
+        }
+        
+        if (document.activeElement.id != 'x' && document.activeElement.id != 'xSet'){
+            document.getElementById('x').value = 'N/A';
+        }
+        
+        if (document.activeElement.id != 'y' && document.activeElement.id != 'ySet'){
+            document.getElementById('y').value = 'N/A';
+        }
+        
+        if (document.activeElement.id != 'vx' && document.activeElement.id != 'vxSet'){
+            document.getElementById('vx').value = 'N/A';
+        }
+        
+        if (document.activeElement.id != 'vy' && document.activeElement.id != 'vySet'){
+            document.getElementById('vy').value = 'N/A';
+        }
+        
+        return;
+    }
+    
     if (document.activeElement.id != 'mass' && document.activeElement.id != 'massSet'){
         document.getElementById('mass').value = balls[selected[0]].mass.toExponential();
     }
+    
     if (document.activeElement.id != 'radius' && document.activeElement.id != 'radiusSet'){
         document.getElementById('radius').value = balls[selected[0]].radius.toExponential();
     }
+    
     if (document.activeElement.id != 'x' && document.activeElement.id != 'xSet'){
         document.getElementById('x').value = balls[selected[0]].location.x.toExponential();
     }
+    
     if (document.activeElement.id != 'y' && document.activeElement.id != 'ySet'){
         document.getElementById('y').value = balls[selected[0]].location.y.toExponential();
     }
+    
     if (document.activeElement.id != 'vx' && document.activeElement.id != 'vxSet'){
          document.getElementById('vx').value = balls[selected[0]].velocity.x.toExponential();
     }
+    
     if (document.activeElement.id != 'vy' && document.activeElement.id != 'vySet'){
         document.getElementById('vy').value = balls[selected[0]].velocity.y.toExponential();
     }
@@ -863,6 +896,7 @@ function uInput(id){
 var frame= function(){
     "use strict";
     var s,i,z;
+
     for(s=0;s<timeSteps;s+=1){
         //calculate gravitational attractions
         for(i=0;i<balls.length-1; i+=1){
@@ -882,6 +916,7 @@ var frame= function(){
             balls[i].update(timeScale);
         }
     }
+    
     
     //refresh the info panel
     refreshAll();
