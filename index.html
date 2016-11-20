@@ -1,86 +1,27 @@
 <HTML>
 <head>
-    <title>Graaaaaaaavity</title>
+    <title>Mainpage - HM</title>
     <link href='style.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
+   
+    <h2>Project: </h2>
+    <ul>
+        <li> Gravity simulator (WIP) -- <a href='Gravity\index.html'>link</a></li>
+    </ul>
     
-    <canvas id='myCanvas'></canvas>
-    <script src='FileSaver.js'></script>
-    <script src="jscolor.js"></script>
-    <script src='visual.js'></script> 
+    <h2>About Me: </h2>
     
-    <div id='menu'>
-    <p id='title'>Global Options</p>
-        <div class='group'>
-            <!-- use onblur='/' to undo unsubmitted changes-->
-            <span title="Little performance impact, decreases accuracy"><p class = 'decription'>Timescale per step</p></span>
-            <input id = 'timescale' value='50'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
-                
-            <span title="Doesn't affect accuracy but decreases performance"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
-            <input id = 'steps' value='10'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
-                
-            <p class = 'decription'>Scale (x meters : 1px)</p>
-            <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
-            
-            <p align = 'center'><input type="button" value='Reset' onclick='setup()'> <input type="button" value='Clear' onclick="deleteAll()"></p>
-            <p align = 'center'><input type="button" value='Save' onclick='saveToFile()'> </p>
-            <input type="file" value='Load' onchange='loadFromFile()' id='load'>
-            
-            <p class = 'decription'>Trace</p>
-            <input id = 'trace' type="range"  min="0" max="10" autocomplete='off' value='0' step='0.01'>
-            
-            <p class = 'decription'>Reference Grid</p>
-            <input id = 'grid' type="checkbox"  autocomplete='off'>
-            
-            <p class = 'decription'>Lantern mouse</p>
-            <input id = 'lantern' type="checkbox"  autocomplete='off'>
-            
-        </div>
-        <p id='title'>Selection Options</p>
-        <div>
-            <p class = 'decription'> mass (kg): </p> 
-            <p class = 'decription' id="mass">N/A</p>
-            <input id = 'massInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off'/> <input type="button" value="Set" disabled id='massSet' onclick='uInput("mass")'/>
-                
-            <p class = 'decription'> radius (m): </p> 
-            <p class = 'decription' id="radius">N/A</p>
-            <input id = 'radiusInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off'/> <input type="button" value="Set" disabled id='radiusSet' onclick='uInput("radius")'/>
-                
-            <p class = 'decription'> x location (m): </p> 
-            <p class = 'decription' id="x">N/A</p>
-            <input id = 'xInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='xSet' onclick='uInput("x")'/>
-                
-            <p class = 'decription'> y location (m): </p> 
-            <p class = 'decription' id="y">N/A</p>
-            <input id = 'yInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='ySet' onclick='uInput("y")'/>
-                
-            <p class = 'decription'>x velocity (m/s): </p> 
-            <p class = 'decription' id="vx">N/A</p>
-            <input id = 'vxInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='vxSet' onclick='uInput("vx")'/>
-                
-            <p class = 'decription'>y velocity (m/s): </p> 
-            <p class = 'decription' id="vy">N/A</p>
-            <input id = 'vyInc' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='vySet' onclick='uInput("vy")'/>
-            
-            <p class = 'decription'>Color: <input class="jscolor {mode:'HS', onFineChange:'changeColor(this)'}" id='colorPicker' value="FFFFFF" disabled></p>
-        </div>
-         <p id='title'>Click Functions</p>
-        <div>
-            <p class = 'decription'><input type="radio" name="click" value="select" autocomplete='off' checked="checked"> Select</p>
-            <p class = 'decription'> <input type="radio" name="click" value="drag" autocomplete='off'> Drag</p>
-            <p class = 'decription'> <input type="radio" name="click" value="create" autocomplete='off'> Create</p>
-            <p class = 'decription'> <input type="radio" name="click" value="delete" autocomplete='off'> Delete</p>
-            <p class = 'decription'> <input type="radio" name="click" value="lock" autocomplete='off'> Lock Camera</p>
-        </div>
-        
-        <p id='title'>Selection Functions</p>
-        <div>
-            <p class = 'decription'> <input type="radio" name="click" id="copy" value="copy" autocomplete='off' disabled> Make Copy</p>
-            <p class = 'decription'> <input type="radio" name="click" id="orbit" value="orbit" autocomplete='off' disabled> Approximate Orbit</p>
-            <!--<p class = 'decription'><input type="radio" name="click" value="scale"> Scale</p> -->
-        </div>
-            
-    </div>
+    Henrique Matulis
+    <br>
+    Computer Science student at the University of Toronto
+    
+    <h2>Contact </h2>
+    Email: <a href='mailto:henrique.matulis@mail.utoronto.ca'>henrique.matulis@mail.utoronto.ca</a>
+    <br>
+    Github: <a href='https://github.com/HenriqueMatulis'>https://github.com/HenriqueMatulis</a>
+    <br>
+    Linkedin: <a href='https://www.linkedin.com/in/henrique-spanoudis-matulis'> www.linkedin.com/in/henrique-spanoudis-matulis</a>
+    
 </body>
 </HTML>
