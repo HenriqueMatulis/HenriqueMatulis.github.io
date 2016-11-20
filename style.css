@@ -15,6 +15,15 @@ body {
     padding: 2em 2em 4em;
     
 }
+#title {
+    top:0%;
+    text-align: center;
+    color: #333;
+    background: #68cc64;
+    background-image: linear-gradient(rgb(255, 255, 255) -20%, #68cc64 120%);
+    min-height:  2em;
+    min-width:100%
+}
 
 h2 {
     margin-top: 1em;
