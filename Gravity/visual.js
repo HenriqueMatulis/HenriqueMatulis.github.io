@@ -111,7 +111,7 @@ function Vector(xx, yy){
 }
 
 //Ball class contains data for all physics objects
-function Ball(xx,yy, rad, m, hu_, sa_){
+function Ball(xx,yy, rad, m){
     "use strict";
     this.location=new Vector(xx,yy);
     this.velocity=new Vector(0,0);
@@ -120,17 +120,12 @@ function Ball(xx,yy, rad, m, hu_, sa_){
     this.force=new Vector(0,0);
     this.radius=rad;
     this.mass=m;
-    //color
-    this.hue= hu_;
-    this.sat=sa_;
-    this.brig=50;
     
     
     //render the ball
     this.render= function(s, f){
         //s=scale, fx= focusx, fy=focusy
-        context.fillStyle = ("hsl("+this.hue+", "+this.sat+"%, "+ this.brig+"%)");
-       // "hsl(0, 0%, 100%)"
+        context.fillStyle = ("rgb(255,255,255)");
         context.beginPath();
         var x_ = canvas.width/2 + (this.location.x - f.x)/s;
         var y_ = canvas.height/2 + (this.location.y - f.y)/s;
@@ -264,7 +259,7 @@ var selected= []; //array of ids of balls currently being selected
 var selecting = false;
 
 var timeScale=50; //amount of seconds one cycle represents
-var timeSteps=10; //amount of cycles per frame of animation
+var timeSteps=100; //amount of cycles per frame of animation
 
 //camera stuff
 var scale = 600000; //1px: scale meters
@@ -283,12 +278,12 @@ var createRadius=20;
 
 var mvUp=false, mvDown=false, mvLeft=false, mvRight=false;
 
-var templateString = '[{"location":{"x":390375813.4283814,"y":219649325.32870263},"velocity":{"x":-0.06854915785755715,"y":0.018033897792559872},"acceleration":{"x":4.815132497341387e-27,"y":-1.57877719196864e-26},"force":{"x":0,"y":0},"radius":37800000,"mass":1e+24,"hue":0,"sat":0,"brig":100},{"location":{"x":400325197.9349472,"y":129255979.44430628},"velocity":{"x":-852.3261244973937,"y":-94.35202595499341},"acceleration":{"x":-0.0008904985438345006,"y":0.008020913331357597},"force":{"x":0,"y":0},"radius":3133982.0278660464,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":438301929.1411347,"y":108867945.44157909},"velocity":{"x":-682.5962321020429,"y":-295.547850439235},"acceleration":{"x":-0.001821432141578731,"y":0.004203137515484569},"force":{"x":0,"y":0},"radius":5745633.717754418,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":436767898.731582,"y":78442341.10834798},"velocity":{"x":-636.6493655213825,"y":-209.54336838682468},"acceleration":{"x":-0.0009442435895786485,"y":0.002869699034807473},"force":{"x":0,"y":0},"radius":7573789.900676278,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":553401124.9460012,"y":116159922.231528},"velocity":{"x":-315.2924417744347,"y":-496.35720904665214},"acceleration":{"x":-0.001511414414242425,"y":0.0009588089560354847},"force":{"x":0,"y":0},"radius":8879615.745620465,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":540127429.1091106,"y":43469398.30425339},"velocity":{"x":-409.46441087907004,"y":-347.98025426100764},"acceleration":{"x":-0.0008086733453496268,"y":0.0009509409130682161},"force":{"x":0,"y":0},"radius":9924276.421575813,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":230841560.22397688,"y":446861869.63165855},"velocity":{"x":401.08527817698473,"y":281.806671088706},"acceleration":{"x":0.0004976964640378277,"y":-0.0007085652687514344},"force":{"x":0,"y":0},"radius":11491267.435508836,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":75379528.81600703,"y":324239602.4215844},"velocity":{"x":141.10595785513323,"y":425.62754499657564},"acceleration":{"x":0.0005749958338054787,"y":-0.00019083338461743784},"force":{"x":0,"y":0},"radius":12797093.280453023,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":121928027.30828953,"y":522472579.8158646},"velocity":{"x":303.76527569935826,"y":269.44120784255944},"acceleration":{"x":0.00027037033485793996,"y":-0.0003049303430024443},"force":{"x":0,"y":0},"radius":12797093.280453023,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":761146662.0150483,"y":-68783008.42846324},"velocity":{"x":-231.50258943946045,"y":-297.48501357215616},"acceleration":{"x":-0.00023873768122951343,"y":0.0001856895352170635},"force":{"x":0,"y":0},"radius":13841753.95640837,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":205483016.48647097,"y":729952582.1138659},"velocity":{"x":329.5842001373242,"y":119.51276853910733},"acceleration":{"x":0.00007718734523661395,"y":-0.00021299374860775554},"force":{"x":0,"y":0},"radius":13841753.95640837,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":18650073.975305673,"y":-290689525.55579114},"velocity":{"x":-262.89510429862406,"y":191.4151990132146},"acceleration":{"x":0.00009856666937388787,"y":0.00013533591831232686},"force":{"x":0,"y":0},"radius":15408744.970341394,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":930276178.7094955,"y":-252905881.2685089},"velocity":{"x":-200.93246722043062,"y":-229.48624934300636},"acceleration":{"x":-0.00009755670587066033,"y":0.00008538052260593732},"force":{"x":0,"y":0},"radius":15408744.970341394,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":1152896270.36551,"y":447383274.622706},"velocity":{"x":82.81361614516625,"y":-277.45850728239805},"acceleration":{"x":-0.00010097608908810625,"y":-0.000030161466721875917},"force":{"x":0,"y":0},"radius":17498066.32225209,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":747722593.7468412,"y":1026368719.0366613},"velocity":{"x":251.39770858419234,"y":-111.35381996844133},"acceleration":{"x":-0.00003471870598847578,"y":-0.00007838495482224806},"force":{"x":0,"y":0},"radius":19065057.336185116,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":53043942.19075274,"y":1142331698.6294036},"velocity":{"x":244.71982409822172,"y":89.5325007923426},"acceleration":{"x":0.000023746118050316717,"y":-0.00006494590065480331},"force":{"x":0,"y":0},"radius":25855351.72989488,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":-502641391.25328916,"y":840376420.420038},"velocity":{"x":141.3081962454026,"y":203.43967331554367},"acceleration":{"x":0.000046333587268552003,"y":-0.000032204435769365605},"force":{"x":0,"y":0},"radius":32384480.954615813,"mass":1,"hue":0,"sat":0,"brig":100},{"location":{"x":-837746565.2498229,"y":195075521.8411336},"velocity":{"x":-4.741814868692376,"y":233.06755170151106},"acceleration":{"x":0.00004422236678868363,"y":8.856957450981379e-7},"force":{"x":0,"y":0},"radius":37085453.99641488,"mass":1,"hue":0,"sat":0,"brig":100}]';
+var templateString = '[{"location":{"x":390340647.7106449,"y":219658576.7183134},"velocity":{"x":-0.06854915785755715,"y":0.018033897792559872},"acceleration":{"x":1.4462703192670295e-26,"y":-2.0026159600984145e-27},"force":{"x":0,"y":0},"radius":37800000,"mass":1e+24},{"location":{"x":481653879.44891775,"y":220148954.0745718},"velocity":{"x":5.318577745604819,"y":-854.8455725764729},"acceleration":{"x":-0.008003855280679161,"y":-0.00004672961549658137},"force":{"x":0,"y":0},"radius":3133982.0278660464,"mass":1},{"location":{"x":510570770.2650439,"y":231556220.38363212},"velocity":{"x":-72.92044079048155,"y":739.7755054360014},"acceleration":{"x":-0.004550139505824731,"y":-0.00044885593008022774},"force":{"x":0,"y":0},"radius":5745633.717754418,"mass":1},{"location":{"x":531032339.8306113,"y":171463962.71022034},"velocity":{"x":217.1847186697145,"y":633.7948611748192},"acceleration":{"x":-0.0028545364043755994,"y":0.0009785536356587314},"force":{"x":0,"y":0},"radius":7573789.900676278,"mass":1},{"location":{"x":288281906.005353,"y":55737937.33983264},"velocity":{"x":-499.1956614852389,"y":310.7376967104933},"acceleration":{"x":0.0009458279982091978,"y":0.0015196478700164923},"force":{"x":0,"y":0},"radius":8879615.745620465,"mass":1}]';
 var templateArray = JSON.parse(templateString);
 
 var ii, bb;
 for(ii=0;ii<templateArray.length;ii++){
-        bb = new Ball(templateArray[ii].location.x, templateArray[ii].location.y, templateArray[ii].radius, templateArray[ii].mass, templateArray[ii].hue, templateArray[ii].sat);
+        bb = new Ball(templateArray[ii].location.x, templateArray[ii].location.y, templateArray[ii].radius, templateArray[ii].mass);
         bb.velocity = templateArray[ii].velocity;
         balls.push(bb);
 }
@@ -299,11 +294,11 @@ function deleteAll(){
     "use strict";
     selected= [];
     cameraLock=-1;
-    document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    balls=[];
+    document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     //Resets canvas
     context.fillStyle = "rgb(0,0,0)";
     context.fillRect(0,0,canvas.width, canvas.height);
-    balls=[];
 }
 
 function saveToFile(){
@@ -323,7 +318,7 @@ function ballsFromString(str){
     deleteAll();
     var i, b;
     for(i=0;i<tempArray.length;i++){
-        b = new Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass, tempArray[i].hue, tempArray[i].sat);
+        b = new Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass);
         b.velocity = tempArray[i].velocity;
         balls.push(b);
     }
@@ -353,7 +348,7 @@ function setup(){
     
     mvUp = mvDown = mvLeft = mvRight = false;
     
-    document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+    document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
     
     ballsFromString(templateString);
 }
@@ -386,22 +381,33 @@ function refreshAll(){
     }
     
     if(selected.length!=1){
-        document.getElementById('mass').innerHTML='N/A';
-        document.getElementById('radius').innerHTML='N/A';
-        document.getElementById('x').innerHTML='N/A';
-        document.getElementById('y').innerHTML='N/A';
-        document.getElementById('vx').innerHTML='N/A';
-        document.getElementById('vy').innerHTML='N/A';
+        document.getElementById('mass').value='N/A';
+        document.getElementById('radius').value='N/A';
+        document.getElementById('x').value='N/A';
+        document.getElementById('y').value='N/A';
+        document.getElementById('vx').value='N/A';
+        document.getElementById('vy').value='N/A';
         return;
     }
     
-    
-    document.getElementById('mass').innerHTML = balls[selected[0]].mass.toExponential();
-    document.getElementById('radius').innerHTML = balls[selected[0]].radius.toExponential();
-    document.getElementById('x').innerHTML = balls[selected[0]].location.x.toExponential();
-    document.getElementById('y').innerHTML = balls[selected[0]].location.y.toExponential();
-    document.getElementById('vx').innerHTML = balls[selected[0]].velocity.x.toExponential();
-    document.getElementById('vy').innerHTML = balls[selected[0]].velocity.y.toExponential();
+    if (document.activeElement.id != 'mass' && document.activeElement.id != 'massSet'){
+        document.getElementById('mass').value = balls[selected[0]].mass.toExponential();
+    }
+    if (document.activeElement.id != 'radius' && document.activeElement.id != 'radiusSet'){
+        document.getElementById('radius').value = balls[selected[0]].radius.toExponential();
+    }
+    if (document.activeElement.id != 'x' && document.activeElement.id != 'xSet'){
+        document.getElementById('x').value = balls[selected[0]].location.x.toExponential();
+    }
+    if (document.activeElement.id != 'y' && document.activeElement.id != 'ySet'){
+        document.getElementById('y').value = balls[selected[0]].location.y.toExponential();
+    }
+    if (document.activeElement.id != 'vx' && document.activeElement.id != 'vxSet'){
+         document.getElementById('vx').value = balls[selected[0]].velocity.x.toExponential();
+    }
+    if (document.activeElement.id != 'vy' && document.activeElement.id != 'vySet'){
+        document.getElementById('vy').value = balls[selected[0]].velocity.y.toExponential();
+    }
     
     
     
@@ -548,7 +554,7 @@ document.onmousedown = function(event){
                     if(selected[i] === clicked){
                         selected.splice(i, 1);
                         if(selected.length == 0){
-                            document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                            document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
                         }
                         return;          
                     }
@@ -562,7 +568,7 @@ document.onmousedown = function(event){
             }
             
             
-            document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
+            document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = false;
             refreshAll();
             return;
         }
@@ -579,7 +585,7 @@ document.onmousedown = function(event){
             if(index>=0){
                 selected.splice(index, 1);
                 if(selected.length == 0){
-                        document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+                        document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
                     }
             }
             if(cameraLock == clicked){
@@ -591,25 +597,30 @@ document.onmousedown = function(event){
             return;
         }
         
-        if(clickR == 'orbit' && binarySearch(selected, clicked) == -1){
+        if(clickR == 'orbit'){
             //make vector that points from selected to clicked
             for(i=0;i<selected.length; i++){
-                var difference = balls[clicked].location.sub2(balls[clicked].location, balls[selected[i]].location);
+                if(clicked != selected[i]){
+                    var difference = balls[clicked].location.sub2(balls[clicked].location, balls[selected[i]].location);
             
-                //find orbital speed at given distance (circular)
-                var speed = Math.sqrt(6.67384e-11 * balls[clicked].mass / difference.mag());
+                    //find orbital speed at given distance (circular)
+                    var speed = Math.sqrt(6.67384e-11 * balls[clicked].mass / difference.mag());
             
 
-                //translate speed into vector
-                difference.normalize();
-                difference.rotate(Math.PI/2);
-                difference.mult(speed);
+                    //translate speed into vector
+                    difference.normalize();
+                    difference.rotate(Math.PI/2);
+                    if(Math.random() > 0.5){
+                        difference.mult(-1);
+                    }
+                    difference.mult(speed);
             
-                //add the velocity of the object to be orbitted around
-                difference.add(balls[clicked].velocity);
+                    //add the velocity of the object to be orbitted around
+                    difference.add(balls[clicked].velocity);
             
-                //update selected's velocity
-                balls[selected[i]].velocity = difference;
+                    //update selected's velocity
+                    balls[selected[i]].velocity = difference;
+                }
             }
             return;
         }
@@ -645,7 +656,7 @@ document.onmousedown = function(event){
         for(i=0;i< selected.length; i++){
             loc = avrg.sub2(balls[selected[i]].location, avrg);
             loc.add(convertToAbs(mouseLoc));
-            var temp = new Ball(loc.x , loc.y, balls[selected[i]].radius, balls[selected[i]].mass, balls[selected[i]].hue, balls[selected[i]].sat);
+            var temp = new Ball(loc.x , loc.y, balls[selected[i]].radius, balls[selected[i]].mass);
             temp.velocity.x = balls[selected[i]].velocity.x;
             temp.velocity.y = balls[selected[i]].velocity.y;
             balls.push(temp);
@@ -670,7 +681,7 @@ document.onmouseup = function(event){
         var temp = findBallsInRect(selectStart, mLoc);
         if(temp.length <=0){
             selected = [];
-            document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
+            document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = true;
             return;
         }
         
@@ -683,7 +694,7 @@ document.onmouseup = function(event){
                 selected.splice(insertLoc, 0, temp[i]);
             }
         }
-        document.getElementById('colorPicker').disabled = document.getElementById('massInc').disabled = document.getElementById('massSet').disabled = document.getElementById('radiusInc').disabled = document.getElementById('radiusSet').disabled = document.getElementById('xInc').disabled = document.getElementById('xSet').disabled = document.getElementById('yInc').disabled = document.getElementById('ySet').disabled = document.getElementById('vxInc').disabled = document.getElementById('vxSet').disabled = document.getElementById('vyInc').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = selected.length>=0? false: true;
+        document.getElementById('mass').disabled = document.getElementById('massSet').disabled = document.getElementById('radius').disabled = document.getElementById('radiusSet').disabled = document.getElementById('x').disabled = document.getElementById('xSet').disabled = document.getElementById('y').disabled = document.getElementById('ySet').disabled = document.getElementById('vx').disabled = document.getElementById('vxSet').disabled = document.getElementById('vy').disabled = document.getElementById('vySet').disabled = document.getElementById('copy').disabled = document.getElementById('orbit').disabled = selected.length>=0? false: true;
         
         refreshAll();
         
@@ -797,7 +808,7 @@ function uInput(id){
         }
         scale = temp;
     }else if(id =="mass"){
-        temp = parseFloat(document.getElementById('massInc').value);
+        temp = parseFloat(document.getElementById('mass').value);
         if(!temp){
             return;
         }
@@ -805,7 +816,7 @@ function uInput(id){
             balls[selected[i]].mass=temp;
         }
     }else if(id =="radius"){
-        temp = parseFloat(document.getElementById('radiusInc').value);
+        temp = parseFloat(document.getElementById('radius').value);
         if(!temp){
             return;
         }
@@ -813,7 +824,7 @@ function uInput(id){
             balls[selected[i]].radius= temp;
         }
     }else if(id =="x"){
-        temp = parseFloat(document.getElementById('xInc').value);
+        temp = parseFloat(document.getElementById('x').value);
         if(!temp){
             return;
         }
@@ -821,7 +832,7 @@ function uInput(id){
             balls[selected[i]].location.x=temp;
         }
     }else if(id =="y"){
-        temp = parseFloat(document.getElementById('yInc').value);
+        temp = parseFloat(document.getElementById('y').value);
         if(!temp){
             return;
         }
@@ -829,7 +840,7 @@ function uInput(id){
             balls[selected[i]].location.y= temp;
         }
     }else if(id =="vx"){
-        temp = parseFloat(document.getElementById('vxInc').value);
+        temp = parseFloat(document.getElementById('vx').value);
         if(!temp){
             return;
         }
@@ -837,7 +848,7 @@ function uInput(id){
             balls[selected[i]].velocity.x=temp;
         }
     }else if(id =="vy"){
-        temp = parseFloat(document.getElementById('vyInc').value);
+        temp = parseFloat(document.getElementById('vy').value);
         if(!temp){
             return;
         }
@@ -847,15 +858,6 @@ function uInput(id){
     }
 }
 
-function changeColor(cPicker){
-    "use strict";
-    var i;
-    for(i=0; i<selected.length; i++){
-        balls[selected[i]].hue = cPicker.hsv[0];
-        balls[selected[i]].sat = cPicker.hsv[1];
-        balls[selected[i]].brig = 50;
-    }
-}
 
 //frame is basically a while loop or draw loop
 var frame= function(){
@@ -916,7 +918,7 @@ var frame= function(){
         
         var gridShift = new Vector( ( (shift.x / scale) )%canvas.width , (shift.y / scale) % canvas.height);
         
-        var lines = 10;//Math.floor(canvas.width / (500 * 6e5/ scale));
+        var lines = 7;//Math.floor(canvas.width / (500 * 6e5/ scale));
         
         
         
@@ -949,13 +951,6 @@ var frame= function(){
     
     //render all balls
     for(i=0;i<balls.length;i+=1){
-        if(document.getElementById('lantern').checked){
-            var lum = convertToRel(balls[i].location);
-            lum.sub(mouseLoc);
-            balls[i].brig = 1000000.0 / (lum.magSq());
-        }else{
-            balls[i].brig = 50;
-        }
         balls[i].render(scale, shift);
     }
     
