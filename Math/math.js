@@ -59,7 +59,7 @@ function setup(){
 
     start = new Date().getTime() + 10;
     
-    result = (i+1);
+    result = (i+1) * 10;
     
     var nums = createAdd(result, i);
     equation = format_add(nums, false);
