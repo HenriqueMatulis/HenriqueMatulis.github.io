@@ -1,58 +1,64 @@
+Physics = (function(){
+
 //Ball class contains data for all physics objects
-function Ball(xx, yy, rad, m) {
+BALL = function Ball(x, y, radius, mass) {
     "use strict";
-    this.location = new Vector(xx, yy);
+    this.location = new Vector(x, y);
     this.velocity = new Vector(0, 0);
     this.acceleration = new Vector(0, 0);
     //force vector is reset every frame, can't use it to accelerate an object
     this.force = new Vector(0, 0);
-    this.radius = rad;
-    this.mass = m;
+    this.radius = radius;
+    this.mass = mass;
     
     
     
     
     //update the balls location
     this.update= function(timeScale){
-        this.acceleration.x = this.force.x / (this.mass);
-        this.acceleration.y = this.force.y / (this.mass);
+        this.acceleration = VECTOR.div(this.force, (this.mass));
         
         this.force.x = this.force.y = 0;
         
-        this.location.x += (this.velocity.x * timeScale) + ((this.acceleration.x * timeScale * timeScale) / 2);
-		this.velocity.x += (this.acceleration.x * timeScale);
-		this.location.y += (this.velocity.y * timeScale) + ((this.acceleration.y * timeScale * timeScale) / 2);
-		this.velocity.y += (this.acceleration.y * timeScale);
+        this.location.add(VECTOR.mult(this.velocity, timeScale));
+        this.location.add(VECTOR.mult(this.acceleration, timeScale * timeScale / 2));
+        
+        this.velocity.add(VECTOR.mult(this.acceleration, timeScale))
     };
     
 }
 
 
 //calculate and apply the gravitational attraction between 2 physics objects
-function gravity(ball1, ball2){
+GRAVITY = function gravity(ball1, ball2){
     "use strict";
     //vector points from 2 to 1
-    var diff = ball1.location.sub2(ball1.location, ball2.location);
+    var diff = VECTOR.sub(ball1.location, ball2.location);
     //calculate gravitations attraction, use diff for direction
     var attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (diff.magSq());
     diff.normalize();
     
-    //apply forces
-    ball1.force.x +=(attraction * -diff.x);
-    ball1.force.y +=(attraction * -diff.y);
+    diff.mult(attraction);
     
-    ball2.force.x +=(attraction * diff.x);
-    ball2.force.y +=(attraction * diff.y);
+    //apply forces
+    ball1.force.sub(diff);
+    ball2.force.add(diff);
 }
 
-function collision(ball1, ball2, timeStep){
+COLLISION = function collision(ball1, ball2, timeStep){
     //check for collision and handle collision
     "use strict";
-    var disp1 = ball1.location.add2(ball1.location.mult2(ball1.velocity,timeStep), ball1.location.mult2(ball1.acceleration, timeStep * timeStep /2.0));
+    
+    //find the displacement of balls 1 and 2
+    var disp1 = VECTOR.add(VECTOR.mult(ball1.velocity,timeStep), VECTOR.mult(ball1.acceleration, timeStep * timeStep / 2.0));
     disp1.mult(-1);
-    var disp2 = ball1.location.add2(ball1.location.mult2(ball2.velocity,timeStep), ball1.location.mult2(ball2.acceleration, timeStep * timeStep /2.0));
-    var dispt = disp2.add2(disp1, disp2);
-    var shortestLength = dispt.sub2(ball1.location, ball2.location);
+    var disp2 = VECTOR.add(VECTOR.mult(ball2.velocity, timeStep), VECTOR.mult(ball2.acceleration, timeStep * timeStep /2.0));
+    
+    // relative displacement
+    var dispt = VECTOR.add(disp1, disp2);
+    
+    
+    var shortestLength = VECTOR.sub(ball1.location, ball2.location);
     if(shortestLength.dot(dispt) <=0){
         return;
     }
@@ -76,13 +82,13 @@ function collision(ball1, ball2, timeStep){
     }
     //collision!
     var collisionTime = distance/ dispt.mag();
-    disp1.mult(- collisionTime * 0.9);
-    disp2.mult(- collisionTime * 0.9);
+    disp1.mult(-collisionTime);
+    disp2.mult(-collisionTime);
     
     ball1.location.add(disp1);
     ball2.location.add(disp2);
     
-    var n = ball1.location.sub2(ball1.location, ball2.location);
+    var n = VECTOR.sub(ball1.location, ball2.location);
     n.normalize();
     
     var a1 = n.dot(ball1.velocity);
@@ -90,10 +96,17 @@ function collision(ball1, ball2, timeStep){
     
     var optimizedP = Math.abs((2.0 * (a1 - a2))/ (ball1.mass +ball2.mass));
     
-    var vA1 = dispt.add2(ball1.velocity, dispt.mult2(n, ball2.mass * optimizedP));
-    var vA2 = dispt.sub2(ball2.velocity, dispt.mult2(n, ball1.mass * optimizedP));
+    var vA1 = VECTOR.add(ball1.velocity, VECTOR.mult(n, ball2.mass * optimizedP));
+    var vA2 = VECTOR.sub(ball2.velocity, VECTOR.mult(n, ball1.mass * optimizedP));
     
     ball1.velocity= vA1;
     ball2.velocity=vA2;
     
 }
+
+return {
+    Ball: BALL,
+    gravity: GRAVITY,
+    collision: COLLISION
+};
+}());

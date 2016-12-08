@@ -1,65 +1,82 @@
-/*jslint white: true, bitwise: true, eqeq: true, nomen: true, plusplus: true, vars: true, maxlen: 120, maxerr: 50*/
-
-//render the ball
-    this.render = function (context, scale, focus, timeScale, selected) {
-        //s=scale, fx= focusx, fy=focusy
-        context.fillStyle = ("rgb(255,255,255)");
-        context.beginPath();
-        var x_ = canvas.width / 2 + (this.location.x - focus.x)/scale;
-        var y_ = canvas.height/2 + (this.location.y - focus.y)/scale;
-        context.arc(x_,y_,this.radius/scale, 0, 2*Math.PI);
-        context.fill();
-    };
+Visual = (function(){
     
-    //render the balls selected outline, and its velocity vector
-    this.selected= function(scale, timeScale, focus){
+//render the balls selected outline, and its velocity vector
+    function selected(ball, context, scale, focus, timeScale){
         
         context.fillStyle = "hsl(180, 100%, 50%)";
+        //draw outline
         context.beginPath();
-        var x_ = canvas.width/2 + (this.location.x - focus.x)/scale;
-        var y_ = canvas.height/2 + (this.location.y - focus.y)/scale;
-        context.arc(x_, y_,this.radius/scale + 2, 0, 2*Math.PI);
+        var pos = CONVERTTOREL(canvas, ball.location, scale, focus);
+        context.arc(pos.x, pos.y,this.radius/scale + 2, 0, 2*Math.PI);
         context.fill();
         
-        //draw velocity vector
+        //draw velocity vector here!
         context.lineWidth = 1;
         var r = new Vector(this.velocity.x, this.velocity.y);
         r.normalize();
-        r.mult(this.radius + 2);
+        r.mult((ball.radius + 2) / scale);
         context.strokeStyle = "rgb(0, 255, 255)";
         context.beginPath();
-        var tox = (r.x/scale + x_ + this.velocity.x * timeScale * 60/scale);
-        var toy = (r.y/scale + y_ + this.velocity.y * timeScale * 60/scale);
-        context.moveTo(x_, y_);
-        context.lineTo(tox, toy);
-        r.normalize();
-        r.mult(1.2 * this.radius/scale);
-        r.rotate(Math.PI + Math.PI /4);
-        context.lineTo(tox + r.x, toy + r.y);
+        
+        var to = VECTOR.add(pos, r);
+        to.add(VECTOR.mult(this.velocity, timeScale * 60 / scale));
+        
+        //line from center of sphere to velocity
+        context.moveTo(pos.x, pos.y);
+        context.lineTo(to.x, to.y);
+        
+        //line from where tip of arrow to down-left
+        r.mult(1.2);
+        r.rotate(Math.PI + Math.PI / 4);
+        context.lineTo(to.x + r.x, to.y + r.y);
+        
+        //line from tip of arrow to down-right
+        context.moveTo(to.x, to.y);
         r.rotate(-Math.PI /2);
-        context.moveTo(tox, toy);
-        context.lineTo(tox +r.x, toy +r.y);
+        context.lineTo(to.x + r.x, to.y + r.y);
         context.stroke();
         
     };
+    
+    
+//render the ball
+    var RENDER = function render(ball, context, scale, focus, timeScale, selected) {
+        //s=scale, fx= focusx, fy=focusy
+        if(selected){
+            selected(ball, context, scale, focus, timeScale);
+        }
+        
+        //draw ball
+        context.fillStyle = ("rgb(255,255,255)");
+        context.beginPath();
+        
+        var pos = CONVERTTOREL(canvas, ball.location, scale, focus);
+        context.arc(pos.x, pos.y, ball.radius / scale, 0, 2*Math.PI);
+        context.fill();
+    };
+    
+    
+    //convert user's relative co-ordinate system to the absolute cordinate system
+    var CONVERTTOABS = function convertToAbs(canvas, loc, scale, focus){
+        "use strict";
+        var l = new Vector((loc.x - canvas.width/2)*scale, (loc.y - canvas.height/2)*scale);
+        l.add(focus);
+        return l;
+    }
 
+    
+    //convert from absolute to relative co-ordinate system
+    var CONVERTTOREL = function convertToRel(canvas, loc, scale, focus){
+        "use strict";
+        var l = new Vector(canvas.width/2 + (loc.x - focus.x)/scale, canvas.height/2 + (loc.y - focus.y)/scale);
+        return l;
+    }
+    
+    
+    return {
+        render: RENDER,
+        convertToAbs: CONVERTTOABS,
+        convertToRel: CONVERTTOREL
+    };
 
-
-
-
-//convert user's relative co-ordinate system to the absolute cordinate system
-function convertToAbs(loc){
-    "use strict";
-    var l = new Vector((loc.x - canvas.width/2)*scale, (loc.y - canvas.height/2)*scale);
-    l.add(shift);
-    return l;
-}
-
-//convert from absolute to relative co-ordinate system
-function convertToRel(loc){
-    "use strict";
-    var l = new Vector(canvas.width/2 + (loc.x - shift.x)/scale, canvas.height/2 + (loc.y - shift.y)/scale);
-    return l;
-}
-
-
+}());

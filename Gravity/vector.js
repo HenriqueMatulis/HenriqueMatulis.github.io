@@ -74,59 +74,57 @@ var VECTOR = (function VECTOR() {
     "use strict";
 
     //Return a Vector that is the sum of vector1 and vector2
-    this.add = function add(vector1, vector2) {
+    var ADD = function add(vector1, vector2) {
         return new Vector(vector1.x + vector2.x, vector1.y + vector2.y);
     };
 
     
     //Return a Vector that is the difference between vector1 and vector2
-    this.sub = function sub(vector1, vector2) {
-        return new Vector(vector1.x + vector2.x, vector1.y + vector2.y);
+    var SUB = function sub(vector1, vector2) {
+        return new Vector(vector1.x - vector2.x, vector1.y - vector2.y);
         
     };
 
     
     //Return a Vector equal to the normalized vector
-    this.normalize = function normalize(vector) {
+    var NORMALIZE = function normalize(vector) {
         var m = vector.mag();
         return new Vector(vector.x / m, vector.y / m);
     };
     
     //Return the dot product of vector1 and vector2
-    this.dot = function dot(vector1, vector2) {
+    var DOT = function dot(vector1, vector2) {
         return (vector1.x * vector2.x + vector1.y * vector2.y);
     };
     
     //Return a Vector equal to vector times scalar
-    this.mult = function mult(vector, scalar) {
+    var MULT = function mult(vector, scalar) {
         return new Vector(vector.x * scalar, vector.y * scalar);
         
     };
     
     
     //Return a Vector equal to vector divided by scalar
-    this.div = function div(vector, scalar) {
-        return new Vector(vector.x * scalar, vector.y * scalar);
+    var DIV = function div(vector, scalar) {
+        return new Vector(vector.x / scalar, vector.y / scalar);
         
     };
     
     
     //Return a Vector equal to vector rotated angle radians
-    this.rotate = function rotate(vector, angle) {
+    var ROTATE = function rotate(vector, angle) {
         return new Vector(vector.x * Math.cos(angle) - vector.y * Math.sin(angle), vector.y * Math.cos(angle) + vector.x * Math.sin(angle));
         
     };
     
     return {
-        add: this.add,
-        sub: this.sub,
-        mag: this.mag,
-        magSq: this.magSq,
-        normalize: this.normalize,
-        dot: this.dot,
-        mult: this.mult,
-        div: this.div,
-        rotate: this.rotate
+        add: ADD,
+        sub: SUB,
+        normalize: NORMALIZE,
+        dot: DOT,
+        mult: MULT,
+        div: DIV,
+        rotate: ROTATE
         
     };
 }());

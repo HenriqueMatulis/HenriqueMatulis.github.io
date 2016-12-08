@@ -2,11 +2,45 @@
 <head>
     <title>Gravity - HM</title>
     <link href='style.css' rel='stylesheet' type='text/css'>
+     <meta charset="utf-8"/>
 </head>
 <body>
     
     <canvas id='myCanvas'></canvas>
+    <script src='vector.js'></script> 
+    <script src='physics.js'></script> 
     <script src='visual.js'></script> 
+    <script>
+        var animate = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        function(callback) {
+            "use strict";
+            window.setTimeout(callback, 1000/60); 
+        };
+        
+        var canvas = document.getElementById("myCanvas");
+        canvas.width = window.innerWidth * 0.85;
+        canvas.height = window.innerHeight ;
+        var context = canvas.getContext("2d");
+        var a = new Physics.Ball(15,0,5,1e9);
+        var b = new Physics.Ball(-15,0,5,1e9);
+        var scale = .1, timeScale = 5;
+        var focus = new Vector(0, 0);
+        var f = function f(){
+            context.fillStyle = "rgb(0,0,0)";
+            context.fillRect(0,0,canvas.width, canvas.height);
+            Physics.gravity(a, b);
+            a.update(timeScale);
+            b.update(timeScale);
+            Physics.collision(a,b, timeScale);
+            Visual.render(a, context, scale, focus, timeScale, false);
+            Visual.render(b, context, scale, focus, timeScale, false);
+            animate(f);
+        }
+        
+        animate(f);
+    </script>
     
     <div id='menu'>
     <p id='title'>Global Options</p>

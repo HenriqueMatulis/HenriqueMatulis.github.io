@@ -66,28 +66,7 @@ function deleteAll(){
     context.fillRect(0,0,canvas.width, canvas.height);
 }
 
-function saveToFile(){
-    "use strict";
-    var blob = new Blob([JSON.stringify(balls)]);
-    var d = new Date();
-    saveAs(blob, "gravSim_"+d.getTime());
-}
 
-function ballsFromString(str){
-    "use strict";
-    
-    var tempArray = JSON.parse(str);
-    if(!tempArray){
-        return;
-    }
-    deleteAll();
-    var i, b;
-    for(i=0;i<tempArray.length;i++){
-        b = new Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass);
-        b.velocity = tempArray[i].velocity;
-        balls.push(b);
-    }
-}
 
 function setup(){
     "use strict";
