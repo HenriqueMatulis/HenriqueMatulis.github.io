@@ -28,6 +28,7 @@ BALL = function Ball(x, y, radius, mass) {
     
 }
 
+BALLS = [];
 
 //calculate and apply the gravitational attraction between 2 physics objects
 GRAVITY = function gravity(ball1, ball2){
@@ -60,11 +61,11 @@ COLLISION = function collision(ball1, ball2, timeStep){
     
     var shortestLength = VECTOR.sub(ball1.location, ball2.location);
     if(shortestLength.dot(dispt) <=0){
-        return;
+        return false;
     }
     var sL = shortestLength.mag();
     if(dispt.mag() <= sL - ball1.radius -ball2.radius){
-        return;
+        return false;
     }
     var dpUnit = new Vector(dispt.x, dispt.y);
     dpUnit.normalize();
@@ -73,12 +74,12 @@ COLLISION = function collision(ball1, ball2, timeStep){
     var f = (sL*sL) - (d * d);
     var radiiSquared = Math.pow(ball1.radius + ball2.radius,2);
     if (f>= radiiSquared){
-        return;
+        return false;
     }
     
     var distance= d - Math.sqrt(radiiSquared - f);
     if(dispt.mag() < distance){
-        return;
+        return false;
     }
     //collision!
     var collisionTime = distance/ dispt.mag();
@@ -99,14 +100,119 @@ COLLISION = function collision(ball1, ball2, timeStep){
     var vA1 = VECTOR.add(ball1.velocity, VECTOR.mult(n, ball2.mass * optimizedP));
     var vA2 = VECTOR.sub(ball2.velocity, VECTOR.mult(n, ball1.mass * optimizedP));
     
-    ball1.velocity= vA1;
-    ball2.velocity=vA2;
+    ball1.velocity = vA1;
+    ball2.velocity = vA2;
     
+    return true;
+    
+}
+/** Return the id of the ball closest to the Vector location that is within give units of it,
+** return -1 if there is none
+**/
+FINDBALL = function findBall(loc, give){
+    "use strict";
+    var i, minId=-1;
+	for(i=0; i<BALLS.length; i += 1){
+        var delta = VECTOR.sub(BALLS[i].location, loc).mag();
+        var r = BALLS[i].radius;
+        
+		if(delta < r){
+            return i;
+        }
+        
+        if(delta - r < give){
+            give = delta - r;
+            minId = i;
+        }
+    }
+    
+    return minId; 
+}
+
+//find balls in given rectangle
+FINDBALLRECT = function findBallsInRect(corner1, corner2){
+    "use strict";
+    var temp;
+    
+    if(corner1.x > corner2.x){
+        temp = corner2.x;
+        corner2.x=corner1.x;
+        corner1.x=temp;
+    }
+    
+    if(corner1.y > corner2.y){
+        temp = corner2.y;
+        corner2.y=corner1.y;
+        corner1.y=temp;
+    }
+    
+    
+    var i, ids=[];
+    for(i=0; i<BALLS.length; i+=1){
+        if(corner1.x > BALLS[i].location.x){
+            continue;
+        }
+        if(corner2.x < BALLS[i].location.x){
+            continue;
+        }
+        if(corner1.y > BALLS[i].location.y){
+            continue;
+        }
+        if(corner2.y < BALLS[i].location.y){
+            continue;
+        }
+        
+        ids.push(i);
+        
+    }
+    return ids;
+    
+}
+
+UPDATE = function update(timeScale){
+    var i;
+    for(i = 0; i < BALLS.length; i += 1){
+        var j;
+        for(j = i + 1 ; j < BALLS.length; j += 1){
+            GRAVITY(BALLS[i], BALLS[j]);
+            COLLISION(BALLS[i], BALLS[j], timeScale);
+        }
+        BALLS[i].update(timeScale);
+    }
+}
+
+
+var PAUSE = false;
+
+var SETPAUSE = function setPause(newPause){
+    PAUSE = newPause;
+}   
+
+
+var TOGGLEPAUSE = function togglePause(){
+    PAUSE = !PAUSE;
+}   
+
+RUN = function run(timeScale, timeStep){
+    if(PAUSE){
+        return;
+    }
+    var i;
+    for(i = 0; i < timeStep; i += 1){
+        UPDATE(timeScale);
+    }
 }
 
 return {
     Ball: BALL,
+    Balls:BALLS,
     gravity: GRAVITY,
-    collision: COLLISION
+    collision: COLLISION,
+    findBall: FINDBALL,
+    findBallInRect: FINDBALLRECT,
+    update: UPDATE,
+    run: RUN,
+    setPause: SETPAUSE,
+    togglePause: TOGGLEPAUSE
 };
 }());

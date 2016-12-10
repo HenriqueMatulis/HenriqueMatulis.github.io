@@ -16,6 +16,7 @@ body{
 
 #menu{
     overflow-y: auto;
+    overflow-x: hidden;
     background: lightblue;
     width:15%;
     height:100%;

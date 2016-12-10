@@ -6,8 +6,10 @@ Vector class, the functions that end in 2 accept 2 input vectors
 function Vector(xx, yy) {
     "use strict";
     
+    
     this.x = (typeof xx === 'undefined') ? 0 : xx;
     this.y = (typeof yy === 'undefined') ? 0 : yy;
+    
     
     //add a vector to this one
     this.add = function add(vector) {
@@ -63,12 +65,26 @@ function Vector(xx, yy) {
     
     //rotate this vector by input angle, in radians
     this.rotate = function rotate(angle) {
-        this.x = this.x * Math.cos(angle) - this.y * Math.sin(angle);
-        this.y = this.y * Math.cos(angle) + this.x * Math.sin(angle);
+        var xTemp = this.x;
+        var yTemp = this.y;
+        this.x = xTemp * Math.cos(angle) - yTemp * Math.sin(angle);
+        this.y = yTemp * Math.cos(angle) + xTemp * Math.sin(angle);
+        
+    };
+    
+    //Copy the vector vector into this one
+    this.copy = function copy(vector) {
+        this.x = vector.x;
+        this.y = vector.y;
         
     };
 
 }
+
+Vector.prototype.toString = function vectorToString() {
+        var ret = ("X: "+this.x + " | Y: "+ this.y);
+        return ret;
+    };
 
 var VECTOR = (function VECTOR() {
     "use strict";

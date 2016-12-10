@@ -2,7 +2,7 @@ Saving = (function(){
 
 SAVETOFILE = function saveToFile(){
     "use strict";
-    var blob = new Blob([JSON.stringify(balls)]);
+    var blob = new Blob([JSON.stringify(Physics.Balls)]);
     var d = new Date();
     saveAs(blob, "gravSim_"+d.getTime());
 }
@@ -14,13 +14,14 @@ BALLFROMSTRING = function ballsFromString(str){
     if(!tempArray){
         return;
     }
-    var i, b, balls = [];
+    Physics.Balls.length = 0;
+    
+    var i, b;
     for(i=0;i<tempArray.length;i++){
-        b = new Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass);
+        b = new Physics.Ball(tempArray[i].location.x, tempArray[i].location.y, tempArray[i].radius, tempArray[i].mass);
         b.velocity = tempArray[i].velocity;
-        balls.push(b);
+        Physics.Balls.push(b);
     }
-    return balls;
 }
 
 
