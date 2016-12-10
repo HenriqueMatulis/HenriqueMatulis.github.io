@@ -2,63 +2,78 @@
 <head>
     <title>Gravity - HM</title>
     <link href='style.css' rel='stylesheet' type='text/css'>
+     <meta charset="utf-8"/>
 </head>
 <body>
     
     <canvas id='myCanvas'></canvas>
-    <script src='visual.js'></script> 
-    
+    <script src='setup.js'></script> 
+    <script src='vector.js'></script> 
+    <script src='physics.js'></script> 
+    <script src='visual.js'></script>
+    <script src='input.js'></script> 
+    <script src='main.js'></script> 
+    <script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script> 
+    <script src='saving.js'></script> 
     <div id='menu'>
     <p id='title'>Global Options</p>
         <div>
             <!-- use onblur='/' to undo unsubmitted changes-->
             <span title="Little performance impact, decreases accuracy"><p class = 'decription'>Timescale per step</p></span>
-            <input id = 'timescale' value='50'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refresh("timescale")'/>
+            <input id = 'timescale' value='50'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refreshAll()'/>
                 
             <span title="Doesn't affect accuracy but decreases performance"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
-            <input id = 'steps' value='100'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refresh("steps")'/>
+            <input id = 'steps' value='100'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refreshAll()'/>
                 
             <p class = 'decription' title="How many meters one pixel in the simulation represents">Scale (x meters : 1px)</p>
-            <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refresh("scale")'/>
+            <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refreshAll())'/>
             
             <p class = 'decription'>Trace</p>
-            <input id = 'trace' type="range"  min="0" max="1" autocomplete='off' value='0.1' step='0.0001'>
+            <input id = 'trace' type="range"  min="0" max="1" autocomplete='off' value='0' step='0.0001'>
             
+            <!--
             <p class = 'decription'>Reference Grid</p>
             <input id = 'grid' type="checkbox"  autocomplete='off'>
+            -->
             
             
         </div>
         <p id='title'>Selection Options</p>
         <div>
             <p class = 'decription'> mass (kg): </p> 
-            <input id = 'mass' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off'/> <input type="button" value="Set" disabled id='massSet' onclick='uInput("mass")'/>
+            <input id = 'mass' disabled  onkeyup='if (event.keyCode == 13) { uInput("mass"); return false; }' autocomplete='off'/>
+            <input type="button" value="Set" disabled id='massBtn' onclick='uInput("mass")'/>
                 
             <p class = 'decription'> radius (m): </p> 
-            <input id = 'radius' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off'/> <input type="button" value="Set" disabled id='radiusSet' onclick='uInput("radius")'/>
+            <input id = 'radius' disabled  onkeyup='if (event.keyCode == 13) { uInput("radius"); return false; }' autocomplete='off'/> 
+            <input type="button" value="Set" disabled id='radiusBtn' onclick='uInput("radius")'/>
                 
             <p class = 'decription'> x location (m): </p> 
-            <input id = 'x' disabled  onkeyup='if (event.keyCode == 13) { uInput("x"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='xSet' onclick='uInput("x")'/>
+            <input id = 'location.x' disabled  onkeyup='if (event.keyCode == 13) { uInput("location.x"); return false; }' autocomplete='off'/>
+            <input type="button" value="Set" disabled id='location.xBtn' onclick='uInput("location.x")'/>
                 
             <p class = 'decription'> y location (m): </p> 
-            <input id = 'y' disabled  onkeyup='if (event.keyCode == 13) { uInput("y"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='ySet' onclick='uInput("y")'/>
+            <input id = 'location.y' disabled  onkeyup='if (event.keyCode == 13) { uInput("location.y"); return false; }' autocomplete='off'/>
+            <input type="button" value="Set" disabled id='location.yBtn' onclick='uInput("location.y")'/>
                 
             <p class = 'decription'>x velocity (m/s): </p> 
-            <input id = 'vx' disabled  onkeyup='if (event.keyCode == 13) { uInput("vx"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='vxSet' onclick='uInput("vx")'/>
+            <input id = 'velocity.x' disabled  onkeyup='if (event.keyCode == 13) { uInput("velocity.x"); return false; }' autocomplete='off'/>
+            <input type="button" value="Set" disabled id='velocity.xBtn' onclick='uInput("velocity.x")'/>
                 
             <p class = 'decription'>y velocity (m/s): </p> 
-            <input id = 'vy' disabled  onkeyup='if (event.keyCode == 13) { uInput("vy"); return false; }' autocomplete='off'/><input type="button" value="Set" disabled id='vySet' onclick='uInput("vy")'/>
+            <input id = 'velocity.y' disabled  onkeyup='if (event.keyCode == 13) { uInput("velocity.y"); return false; }' autocomplete='off'/>
+            <input type="button" value="Set" disabled id='velocity.yBtn' onclick='uInput("velocity.y")'/>
             
         </div>
          <p id='title'>Click Functions</p>
         <div>
             <p class = 'decription'><input type="radio" name="click" value="select" autocomplete='off' checked="checked"> Select</p>
             <p class = 'decription'> <input type="radio" name="click" value="drag" autocomplete='off'> Drag</p>
+            <p class = 'decription'> <input type="radio" name="click" value="dragVelocity" autocomplete='off'> Drag Velocity</p>
             <p class = 'decription'> <input type="radio" name="click" value="create" autocomplete='off'> Create</p>
-            <p class = 'decription'> <input type="radio" name="click" value="delete" autocomplete='off'> Delete</p>
+            <p class = 'decription'> <input type="radio" name="click" value="remove" autocomplete='off'> Delete</p>
             <p class = 'decription'> <input type="radio" name="click" value="lock" autocomplete='off'> Lock Camera</p>
         </div>
-        
         <p id='title'>Selection Functions</p>
         <div>
             <p class = 'decription'> <input type="radio" name="click" id="copy" value="copy" autocomplete='off' disabled> Make Copy</p>
@@ -68,9 +83,9 @@
         
         <p id='title'>Saving</p>
         <div>
-            <p align = 'center'><input type="button" value='Reset' onclick='setup()'> <input type="button" value='Clear' onclick="deleteAll()"></p>
-            <p align = 'center'><input type="button" value='Save' onclick='saveToFile()'> </p>
-            <input type="file" value='Load' onchange='loadFromFile()' id='load'>
+            <input type="button" value='Clear' onclick="Physics.Balls.length = 0; Visual.allSelected.length = 0; allowInputs(false)"></p>
+            <p align = 'center'><input type="button" value='Save' onclick='Saving.saveToFile()'> </p>
+            <input type="file" value='Load' onchange='Saving.loadFromFile()' id='load'>
         </div>
             
     </div>
