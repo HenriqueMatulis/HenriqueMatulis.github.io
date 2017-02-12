@@ -31,10 +31,10 @@
             <p class = 'decription' title="How many meters one pixel in the simulation represents">Scale (x meters : 1px)</p>
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refreshAll())'/>
             
-            <span title="Turn off for long exposure"><p class = 'decription'><p class = 'decription'>Clear screen every frame</p></span>
-            <input id = 'reset' type="checkbox" autocomplete='off' checked="checked">
+            <span title="Toggles long exposure"><p class = 'decription'><p class = 'decription'>Long exposure</p></span>
+            <input id = 'reset' type="checkbox" autocomplete='off'>
             
-            <span title="The opacity that every object has when printed"><p class = 'decription'>Opacity of objects</p></span>
+            <span title="IE. The opacity that every object has when printed"><p class = 'decription'>Light level</p></span>
             <input id = 'opacity' type="range"  min="0.01" max="1" autocomplete='off' value='1' step='0.0001'>
             
             <!--

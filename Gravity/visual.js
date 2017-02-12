@@ -173,7 +173,7 @@ Visual = (function(){
             
         }
         
-        CONTEXT.fillStyle = "rgba(0,0,0,"+ (document.getElementById('reset').checked ? 1 : 0) +")";
+        CONTEXT.fillStyle = "rgba(0,0,0,"+ (document.getElementById('reset').checked ? 0 : 1) +")";
         CONTEXT.fillRect(0,0,canvas.width, canvas.height);
         
         OVERLAY.clearRect(0, 0, canvas.width, canvas.height);

@@ -469,7 +469,7 @@ window.onkeydown = function(e){
     "use strict";
     
     var keyCode = e.keyCode || e.which;
-    
+
     if(keyCode == 65 || keyCode ==37){
         //left arrow or a key, go left
         
@@ -505,9 +505,17 @@ window.onkeyup = function(e){
     "use strict";
     var keyCode = e.keyCode || e.which;
     
-    if(keyCode == 32){
+    if(keyCode == 80){
+        //'p' button, toggles pause
         Physics.togglePause();
-    } else if(keyCode == 65 || keyCode == 37){
+    } 
+    
+    if(keyCode == 67){
+        //'c' button, toggles long exposure
+        document.getElementById('reset').checked = !document.getElementById('reset').checked
+    }
+    
+    if(keyCode == 65 || keyCode == 37){
         //left arrow or a key, go left
         Visual.move.x = Visual.move.x < 0? 0 : Visual.move.x;
         
