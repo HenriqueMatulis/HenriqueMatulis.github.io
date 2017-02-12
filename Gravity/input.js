@@ -433,7 +433,7 @@ function selectRect(){
 document.onmouseup = function(event){
     "use strict";
     if(clickId){
-        Physics.setPause(false);
+        //Physics.setPause(false);
         clickId = undefined;
     }
     if(clicking){

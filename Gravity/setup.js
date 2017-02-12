@@ -7,10 +7,19 @@ var animate = window.requestAnimationFrame ||
         
         
         
-var canvas = document.getElementById("myCanvas");
+var canvas = document.getElementById("canvasSimulation");
 var overLayCanvas = document.getElementById("canvasOverLay");
-canvas.width = overLayCanvas.width = window.innerWidth * 0.85;
-canvas.height = overLayCanvas.height = window.innerHeight ;
+
+function resizeCanvas() {
+    canvas.width = overLayCanvas.width = window.innerWidth * 0.85;
+    canvas.height = overLayCanvas.height = window.innerHeight ;
+}
+
+
+window.addEventListener('resize', resizeCanvas, false);
+window.addEventListener('orientationchange', resizeCanvas, false);
+resizeCanvas()
+
 var context = canvas.getContext("2d");
 context.font = "16px Arial";
 context.fillStyle = "rgb(0,0,0)";

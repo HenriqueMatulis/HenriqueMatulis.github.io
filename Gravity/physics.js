@@ -19,27 +19,32 @@ BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
     
     //update the balls location
     this.update= function(timeScale){
-        this.acceleration = VECTOR.div(this.force, (this.mass));
+        this.acceleration.x = this.force.x / this.mass;
+        this.acceleration.y = this.force.y / this.mass;
         
         this.force.x = this.force.y = 0;
         
-        this.location.add(VECTOR.mult(this.velocity, timeScale));
-        this.location.add(VECTOR.mult(this.acceleration, timeScale * timeScale / 2));
+        this.location.x += (this.velocity.x + this.acceleration.x * timeScale / 2) * timeScale;
+        this.location.y += (this.velocity.y + this.acceleration.y * timeScale / 2) * timeScale;
         
-        this.velocity.add(VECTOR.mult(this.acceleration, timeScale))
+        this.velocity.x += this.acceleration.x * timeScale;
+        this.velocity.y += this.acceleration.y * timeScale;
     };
     
 }
 
 BALLS = [];
 
+diff = new Vector();
+attraction = 0;
 //calculate and apply the gravitational attraction between 2 physics objects
 GRAVITY = function gravity(ball1, ball2){
     "use strict";
     //vector points from 2 to 1
-    var diff = VECTOR.sub(ball1.location, ball2.location);
+    diff.x = ball1.location.x - ball2.location.x;
+    diff.y = ball1.location.y - ball2.location.y;
     //calculate gravitations attraction, use diff for direction
-    var attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (diff.magSq());
+    attraction = (6.674e-11 * ball1.mass * ball2.mass)/ (diff.magSq());
     diff.normalize();
     
     diff.mult(attraction);
@@ -49,31 +54,55 @@ GRAVITY = function gravity(ball1, ball2){
     ball2.force.add(diff);
 }
 
+
+disp1 = new Vector();
+disp2 = new Vector();
+dispt = new Vector();
+
 COLLISION = function collision(ball1, ball2, timeStep){
     //check for collision and handle collision
     "use strict";
     
     //find the displacement of balls 1 and 2
-    var disp1 = VECTOR.add(VECTOR.mult(ball1.velocity,timeStep), VECTOR.mult(ball1.acceleration, timeStep * timeStep / 2.0));
-    disp1.mult(-1);
-    var disp2 = VECTOR.add(VECTOR.mult(ball2.velocity, timeStep), VECTOR.mult(ball2.acceleration, timeStep * timeStep /2.0));
+    disp1.x = -(ball1.velocity.x + ball1.acceleration.x * timeStep / 2.0) * timeStep;
+    disp1.y = -(ball1.velocity.y + ball1.acceleration.y * timeStep / 2.0) * timeStep;
+    
+    disp2.x = (ball2.velocity.x + ball2.acceleration.x * timeStep / 2.0) * timeStep;
+    disp2.y = (ball2.velocity.y + ball2.acceleration.y * timeStep / 2.0) * timeStep;
+    
     
     // relative displacement
-    var dispt = VECTOR.add(disp1, disp2);
+    dispt.x = disp1.x + disp2.x;
+    dispt.x = disp1.y + disp2.y;
+    
+    //equivalent to
+    /**
+    disp1 = VECTOR.add(VECTOR.mult(ball1.velocity,timeStep), VECTOR.mult(ball1.acceleration, timeStep * timeStep / 2.0));
+    disp1.mult(-1);
+    disp2 = VECTOR.add(VECTOR.mult(ball2.velocity, timeStep), VECTOR.mult(ball2.acceleration, timeStep * timeStep /2.0));
+    
+    dispt = VECTOR.add(disp1, disp2);
+    **/
     
     
-    var shortestLength = VECTOR.sub(ball1.location, ball2.location);
-    if(shortestLength.dot(dispt) <=0){
+    
+    
+    
+    //var shortestLength = VECTOR.sub(ball1.location, ball2.location);
+    //[shortestLength.dot(dispt) <= 0] <= equivalent to the statment below
+    
+    if((ball1.location.x - ball2.location.x) * dispt.x + (ball1.location.y - ball2.location.y) * dispt.y <=0){
         return false;
     }
-    var sL = shortestLength.mag();
-    if(dispt.mag() <= sL - ball1.radius -ball2.radius){
+    //var sL = shortestLength.mag();
+    var sL = Math.sqrt(Math.pow(ball1.location.x - ball2.location.x, 2) + Math.pow(ball1.location.y - ball2.location.y, 2));
+    if(dispt.mag() <= sL - ball1.radius - ball2.radius){
         return false;
     }
     var dpUnit = new Vector(dispt.x, dispt.y);
     dpUnit.normalize();
     
-    var d = dpUnit.dot(shortestLength);
+    var d = (ball1.location.x - ball2.location.x) * dpUnit.x + (ball1.location.y - ball2.location.y) * dpUnit.y; //dpUnit.dot(shortestLength);
     var f = (sL*sL) - (d * d);
     var radiiSquared = Math.pow(ball1.radius + ball2.radius,2);
     if (f>= radiiSquared){
