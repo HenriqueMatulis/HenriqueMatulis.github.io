@@ -6,7 +6,10 @@
 </head>
 <body>
     
-    <canvas id='myCanvas'></canvas>
+    <canvas id="canvasOverLay" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+    <canvas id="myCanvas" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+
+    
     <script src='setup.js'></script> 
     <script src='vector.js'></script> 
     <script src='physics.js'></script> 
@@ -19,17 +22,20 @@
     <p id='title'>Global Options</p>
         <div>
             <!-- use onblur='/' to undo unsubmitted changes-->
-            <span title="Little performance impact, decreases accuracy"><p class = 'decription'>Timescale per step</p></span>
+            <span title="Increases speed, but decresases simmulation accuracy"><p class = 'decription'>Timescale per step</p></span>
             <input id = 'timescale' value='50'  onkeyup='if (event.keyCode == 13) { uInput("timescale"); return false; }'  autocomplete='off' onblur='refreshAll()'/>
                 
-            <span title="Doesn't affect accuracy but decreases performance"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
+            <span title="Speeds up simulation, but makes it look more jittery"><p class = 'decription'>Steps per frame (Integer Value)</p></span>
             <input id = 'steps' value='100'  onkeyup='if (event.keyCode == 13) { uInput("steps"); return false; }' autocomplete='off' onblur='refreshAll()'/>
                 
             <p class = 'decription' title="How many meters one pixel in the simulation represents">Scale (x meters : 1px)</p>
             <input id = 'scale' value='6e5'  onkeyup='if (event.keyCode == 13) { uInput("scale"); return false; }' autocomplete='off' onblur='refreshAll())'/>
             
-            <p class = 'decription'>Trace</p>
-            <input id = 'trace' type="range"  min="0" max="1" autocomplete='off' value='0' step='0.0001'>
+            <span title="Turn off for long exposure"><p class = 'decription'><p class = 'decription'>Clear screen every frame</p></span>
+            <input id = 'reset' type="checkbox" autocomplete='off' checked="checked">
+            
+            <span title="The opacity that every object has when printed"><p class = 'decription'>Opacity of objects</p></span>
+            <input id = 'opacity' type="range"  min="0.01" max="1" autocomplete='off' value='1' step='0.0001'>
             
             <!--
             <p class = 'decription'>Reference Grid</p>

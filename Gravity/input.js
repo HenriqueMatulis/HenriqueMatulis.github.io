@@ -462,8 +462,8 @@ var zoom = function(evt){
     document.getElementById('scale').value = Visual.getScale().toExponential();
 };
 
-canvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
-canvas.addEventListener('mousewheel',    zoom,false); // for everyone else
+overLayCanvas.addEventListener('DOMMouseScroll',zoom,false); // for Firefox
+overLayCanvas.addEventListener('mousewheel',    zoom,false); // for everyone else
 
 window.onkeydown = function(e){
     "use strict";

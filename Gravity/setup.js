@@ -8,7 +8,10 @@ var animate = window.requestAnimationFrame ||
         
         
 var canvas = document.getElementById("myCanvas");
-canvas.width = window.innerWidth * 0.85;
-canvas.height = window.innerHeight ;
+var overLayCanvas = document.getElementById("canvasOverLay");
+canvas.width = overLayCanvas.width = window.innerWidth * 0.85;
+canvas.height = overLayCanvas.height = window.innerHeight ;
 var context = canvas.getContext("2d");
 context.font = "16px Arial";
+context.fillStyle = "rgb(0,0,0)";
+context.fillRect(0,0,canvas.width, canvas.height);

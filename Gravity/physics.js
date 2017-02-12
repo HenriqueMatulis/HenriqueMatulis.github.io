@@ -1,7 +1,7 @@
 Physics = (function(){
 
 //Ball class contains data for all physics objects
-BALL = function Ball(x, y, radius, mass) {
+BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
     "use strict";
     this.location = new Vector(x, y);
     this.velocity = new Vector(0, 0);
@@ -10,6 +10,9 @@ BALL = function Ball(x, y, radius, mass) {
     this.force = new Vector(0, 0);
     this.radius = radius;
     this.mass = mass;
+    this.red = r
+    this.green = g
+    this.blue = b
     
     
     

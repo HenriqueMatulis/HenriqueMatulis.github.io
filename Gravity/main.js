@@ -9,10 +9,10 @@ Physics.Balls.push(moon);
         
         
 var timeScale = 20;
-var timeStep = 10;
+var timeStep = 50;
 var frames = 0;
 
-Visual.setScale(6e5);
+Visual.setScale(1.2e6);
 window.setTimeout(refreshAll, 1000/60); 
         
 var f = function f(){

@@ -1,8 +1,10 @@
 Visual = (function(){
     
-    var CANVAS = document.getElementById("myCanvas");
-    CANVAS.width = window.innerWidth * 0.85;
-    CANVAS.height = window.innerHeight;
+    var CANVAS = canvas;
+    var OVERLAY = overLayCanvas.getContext("2d")
+    
+    OVERLAY.font = "12px Arial";
+    OVERLAY.fillStyle = "rgb(0,0,0)";
     var CONTEXT = CANVAS.getContext("2d");
     var SCALE = 1;
     var CAMERALOCK = -1;
@@ -28,57 +30,54 @@ Visual = (function(){
     
     
     var DRAWX = function(loc, radius){
-        CONTEXT.setLineDash([]);
-        CONTEXT.strokeStyle = "rgb(255, 0, 0)";
-        CONTEXT.lineWidth = 5;
-        CONTEXT.beginPath();
-        CONTEXT.moveTo(loc.x - radius, loc.y - radius);
-        CONTEXT.lineTo(loc.x + radius, loc.y + radius);
+        OVERLAY.setLineDash([]);
+        OVERLAY.strokeStyle = "rgb(255, 0, 0)";
+        OVERLAY.lineWidth = 5;
+        OVERLAY.beginPath();
+        OVERLAY.moveTo(loc.x - radius, loc.y - radius);
+        OVERLAY.lineTo(loc.x + radius, loc.y + radius);
 
-        CONTEXT.moveTo(loc.x + radius, loc.y - radius);
-        CONTEXT.lineTo(loc.x - radius, loc.y + radius);
-        CONTEXT.stroke();
+        OVERLAY.moveTo(loc.x + radius, loc.y - radius);
+        OVERLAY.lineTo(loc.x - radius, loc.y + radius);
+        OVERLAY.stroke();
     }
     
     var DRAWRECT = function(corner1, corner2){
         
-        context.beginPath();
+        OVERLAY.beginPath();
                     
-        CONTEXT.setLineDash([]);
-        CONTEXT.strokeStyle = "rgb(0, 255, 255)";
-        CONTEXT.lineWidth=2;
-        CONTEXT.fillStyle = "rgba(0, 255, 255, 0.1)";
+        OVERLAY.setLineDash([]);
+        OVERLAY.strokeStyle = "rgb(0, 255, 255)";
+        OVERLAY.lineWidth=2;
+        OVERLAY.fillStyle = "rgba(0, 255, 255, 0.1)";
 
-        CONTEXT.rect(corner1.x, corner1.y, corner2.x - corner1.x, corner2.y - corner1.y);
-        CONTEXT.stroke();
-        CONTEXT.fill();
+        OVERLAY.rect(corner1.x, corner1.y, corner2.x - corner1.x, corner2.y - corner1.y);
+        OVERLAY.stroke();
+        OVERLAY.fill();
     };
     
     
     var DRAWCIRCLE = function drawCircle(loc, r){
-        context.beginPath();
+        OVERLAY.beginPath();
                     
-        CONTEXT.setLineDash([]);
-        CONTEXT.strokeStyle = "rgb(0, 255, 255)";
-        CONTEXT.lineWidth=2;
+        OVERLAY.setLineDash([]);
+        OVERLAY.strokeStyle = "rgb(0, 255, 255)";
+        OVERLAY.lineWidth=2;
 
-        CONTEXT.arc(loc.x, loc.y, r, 0, 2*Math.PI);
-        CONTEXT.stroke();
+        OVERLAY.arc(loc.x, loc.y, r, 0, 2*Math.PI);
+        OVERLAY.stroke();
     };
     
     var DRAWVECTOR = function(vec, origin){
         origin = (typeof origin === 'undefined') ? new Vector() : origin;
         
-        CONTEXT.lineWidth = 1;
         
-        CONTEXT.strokeStyle = "rgb(0, 255, 255)";
-        CONTEXT.beginPath();
         
         var tip = VECTOR.add(origin, vec);
         
         //line from origin to tip of vector
-        CONTEXT.moveTo(origin.x, origin.y);
-        CONTEXT.lineTo(tip.x, tip.y);
+        OVERLAY.moveTo(origin.x, origin.y);
+        OVERLAY.lineTo(tip.x, tip.y);
         
         
         var copy = new Vector(vec.x, vec.y);
@@ -86,42 +85,61 @@ Visual = (function(){
         
         //line from where tip of arrow to down-left
         copy.rotate(Math.PI + Math.PI / 4);
-        CONTEXT.lineTo(tip.x + copy.x, tip.y + copy.y);
+        OVERLAY.lineTo(tip.x + copy.x, tip.y + copy.y);
         
         
         
         //line from tip of arrow to down-right
-        CONTEXT.moveTo(tip.x, tip.y);
+        OVERLAY.moveTo(tip.x, tip.y);
         copy.rotate(-Math.PI /2);
-        CONTEXT.lineTo(tip.x + copy.x, tip.y + copy.y);
+        OVERLAY.lineTo(tip.x + copy.x, tip.y + copy.y);
         
-        CONTEXT.stroke();
+        
         
     }
     
 //render the balls selected outline, and its velocity vector
     function SELECT(ball, timeSpan){
         
-        CONTEXT.fillStyle = "rgb(0, 255, 255)";
+        OVERLAY.strokeStyle = "rgb(0, 255, 255)";
+        OVERLAY.fillStyle = "rgb(0, 255, 255)";
+        OVERLAY.setLineDash([]);
+        OVERLAY.lineWidth = 1;
+        
+       
+        OVERLAY.beginPath();
+        
         //draw outline
-        CONTEXT.beginPath();
         var pos = CONVERTTOREL(ball.location);
-        CONTEXT.arc(pos.x, pos.y,ball.radius/SCALE + 2, 0, 2*Math.PI);
-        CONTEXT.fill();
+        var rad = ball.radius / SCALE
+        OVERLAY.arc(pos.x, pos.y, rad, 0, 2*Math.PI);
         
-        
+        //draw velocity vector
         var origin = VECTOR.normalize(ball.velocity);
-        origin.mult(ball.radius / SCALE + 2);
+        origin.mult(rad);
         origin.add(pos);
-        CONTEXT.setLineDash([]);
         DRAWVECTOR(VECTOR.mult(ball.velocity, timeSpan * 60 / SCALE), origin);
+        OVERLAY.stroke();
         
+        
+        //draw acc. vector
         origin = VECTOR.normalize(ball.acceleration);
-        origin.mult(ball.radius / SCALE + 2);
+        origin.mult(rad);
         origin.add(pos);
-        CONTEXT.setLineDash([3]);
+        OVERLAY.setLineDash([3]);
         DRAWVECTOR(VECTOR.mult(ball.acceleration, timeSpan * timeSpan * 3600 / SCALE), origin);
-        //context.fillText(ball.velocity.x.toFixed(3) + ", "+ball.velocity.y.toFixed(3), pos.x + ball.radius / SCALE, pos.y - ball.radius / SCALE);
+        OVERLAY.stroke();
+        
+        OVERLAY.beginPath();
+        OVERLAY.fillStyle = "rgb(255, 255, 255)";
+        OVERLAY.lineWidth = 3;
+        OVERLAY.setLineDash([]);
+        
+        OVERLAY.rect(pos.x - 10 * rad, pos.y - 10, -150, 100);
+        OVERLAY.stroke();
+        OVERLAY.fill();
+        
+        //OVERLAY.fillText(ball.velocity.x.toFixed(3) + ", "+ball.velocity.y.toFixed(3), pos.x + ball.radius / SCALE, pos.y - ball.radius / SCALE);
         
         
     };
@@ -135,7 +153,7 @@ Visual = (function(){
         
         
         //draw ball
-        CONTEXT.fillStyle = ("rgb(255,255,255)");
+        CONTEXT.fillStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
         CONTEXT.beginPath();
         
         var pos = CONVERTTOREL(ball.location);
@@ -152,11 +170,11 @@ Visual = (function(){
             FOCUS.add(VECTOR.mult(MOVE, SCALE));
             
         }
-        var trace = parseFloat(document.getElementById('trace').value);
-        trace = 0.01 / (trace + 0.01);
-        console.log(trace);
-        context.fillStyle = "rgba(0,0,0,"+trace +")";
-        context.fillRect(0,0,canvas.width, canvas.height);
+        
+        CONTEXT.fillStyle = "rgba(0,0,0,"+ (document.getElementById('reset').checked ? 1 : 0) +")";
+        CONTEXT.fillRect(0,0,canvas.width, canvas.height);
+        
+        OVERLAY.clearRect(0, 0, canvas.width, canvas.height);
         
         var i;
         for(i = 0; i < balls.length; i += 1){
@@ -188,6 +206,7 @@ Visual = (function(){
         convertToRel: CONVERTTOREL,
         canvas: CANVAS,
         context: CONTEXT,
+        overLay: OVERLAY,
         setScale: SETSCALE,
         getScale: GETSCALE,
         focus: FOCUS,
