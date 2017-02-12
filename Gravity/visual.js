@@ -130,6 +130,7 @@ Visual = (function(){
         DRAWVECTOR(VECTOR.mult(ball.acceleration, timeSpan * timeSpan * 3600 / SCALE), origin);
         OVERLAY.stroke();
         
+        /**
         OVERLAY.beginPath();
         OVERLAY.fillStyle = "rgb(255, 255, 255)";
         OVERLAY.lineWidth = 3;
@@ -140,6 +141,7 @@ Visual = (function(){
         OVERLAY.fill();
         
         //OVERLAY.fillText(ball.velocity.x.toFixed(3) + ", "+ball.velocity.y.toFixed(3), pos.x + ball.radius / SCALE, pos.y - ball.radius / SCALE);
+        **/
         
         
     };
