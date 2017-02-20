@@ -1,18 +1,5 @@
 /*jslint white: true, bitwise: true, eqeq: true, nomen: true, plusplus: true, vars: true, maxerr: 50*/
 
-//set up canvas animation
-var animate = window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  function(callback) {
-    "use strict";
-    window.setTimeout(callback, 1000 / 60); 
-  };
-
-
-
-
-
 
 function createAdd(result, operations){
     "use strict";
@@ -46,18 +33,30 @@ function format_add(strs, strict){
     return (strict?"(":"") + strs[0] + " + " + strs[1] + (strict?")":"");
     
 }
-    
-var start;
+
 var equation = "";
 var result ;//= Math.floor(Math.random() * 1000) + 6;
 var i = 0;
 var dir = 1;
+var timeLimit = 1150;
+var animDuration = Math.min(timeLimit - 20, 750);
 
-function setup(){
+var bufferToNew;
+var bufferToOld;
+
+var new_;
+var old;
+
+var timer;
+
+var start = new Date().getTime();
+
+
+
+
+function makeProblem(){
     "use strict";
     
-
-    start = new Date().getTime() + 10;
     
     result = (i+1) * 10;
     
@@ -74,32 +73,69 @@ function setup(){
     
 }
 
-setup();
-//frame is basically a while loop or draw loop
-var frame= function(){
-    "use strict";
-    var t = new Date().getTime();
-    document.getElementById('timer').innerHTML = Math.max(Math.round((start - t) / 100) / 10, 0);
-    
-    if((start - t)  <= 0){
-        setup();
-        document.getElementById('old').innerHTML = document.getElementById('new').innerHTML + document.getElementById('old').innerHTML;
-        document.getElementById('old2').innerHTML = document.getElementById('new').innerHTML + document.getElementById('old2').innerHTML;
-        if (document.getElementById('old').innerHTML.length > 1500){
-            document.getElementById('old').innerHTML = document.getElementById('old').innerHTML.slice(0, 1000);
-            document.getElementById('old2').innerHTML = document.getElementById('old2').innerHTML.slice(0, 1000);
-        }
-        document.getElementById('new').innerHTML = '<p>'+ equation + " = " + result +'</p>';
 
-    }
+var startBuffers = function(){
+	bufferToNew.innerHTML = '<p>'+ equation + " = ??? </p>";
+	bufferToOld.innerHTML = new_.innerHTML;
+	
+	document.body.appendChild(bufferToNew);
+	document.body.appendChild(bufferToOld);
     
-    
-    animate(frame);
-};
+}
+
+var clearBuffers = function(){
+	old.innerHTML = bufferToOld.innerHTML + old.innerHTML;
+	new_.innerHTML = bufferToNew.innerHTML;
+     if (old.innerHTML.length > 1500){
+		old.innerHTML = old.innerHTML.slice(0, 1000);
+     }
+	bufferToNew.remove();
+	bufferToOld.remove();
+}
+
+var clearNew = function(){
+	new_.innerHTML = "";
+}
+
+var newProblem = function(){
+	"use strict";
+	start = new Date().getTime();
+	makeProblem();
+	startBuffers();
+	clearNew();
+	setTimeout(clearBuffers, animDuration);
+}
+
+var refreshTimer = function(){
+	"use strict";
+	var t = new Date().getTime();
+	timer.innerHTML = Math.round((timeLimit - t + start) / 100) / 10;
+	
+	
+}
+
+
+
+
+
 
 
 
 window.onload = function() {
    "use strict";
-    animate(frame);
+    bufferToNew = document.getElementById('bufferToNew');
+	bufferToOld = document.getElementById('bufferToOld');
+	bufferToNew.style.animationDuration = animDuration/1000 + "s";
+	bufferToOld.style.animationDuration = animDuration/1000 + "s";
+	bufferToOld.remove();
+	bufferToNew.remove();
+
+	new_ = document.getElementById('new');
+	old = document.getElementById('old');
+	
+	timer = document.getElementById('timer');
+	
+	
+	setInterval(refreshTimer, 100);
+	setInterval(newProblem, timeLimit);
 };
