@@ -2,7 +2,6 @@ Physics = (function(){
 
 //Ball class contains data for all physics objects
 BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
-    "use strict";
     this.location = new Vector(x, y);
     this.velocity = new Vector(0, 0);
     this.acceleration = new Vector(0, 0);
@@ -58,6 +57,20 @@ GRAVITY = function gravity(ball1, ball2){
 disp1 = new Vector();
 disp2 = new Vector();
 dispt = new Vector();
+shortestLength = new Vector();
+sL = 0;
+dpUnit = new Vector();
+d = 0;
+f = 0;
+radiiSquared = 0;
+distance = 0;
+collisionTime = 0;
+n = new Vector();
+a1 = 0;
+a2 = 0;
+optimizedP = 0;
+vA1 = new Vector();
+vA2 = new Vector();
 
 COLLISION = function collision(ball1, ball2, timeStep){
     //check for collision and handle collision
@@ -73,7 +86,7 @@ COLLISION = function collision(ball1, ball2, timeStep){
     
     // relative displacement
     dispt.x = disp1.x + disp2.x;
-    dispt.x = disp1.y + disp2.y;
+    dispt.y = disp1.y + disp2.y;
     
     //equivalent to
     /**
@@ -90,47 +103,54 @@ COLLISION = function collision(ball1, ball2, timeStep){
     
     //var shortestLength = VECTOR.sub(ball1.location, ball2.location);
     //[shortestLength.dot(dispt) <= 0] <= equivalent to the statment below
-    
-    if((ball1.location.x - ball2.location.x) * dispt.x + (ball1.location.y - ball2.location.y) * dispt.y <=0){
+    shortestLength.x = ball1.location.x - ball2.location.x;
+    shortestLength.y = ball1.location.y -  ball2.location.y;
+    if(shortestLength.dot(dispt) <= 0){
         return false;
     }
-    //var sL = shortestLength.mag();
-    var sL = Math.sqrt(Math.pow(ball1.location.x - ball2.location.x, 2) + Math.pow(ball1.location.y - ball2.location.y, 2));
+    
+    sL = shortestLength.mag();
     if(dispt.mag() <= sL - ball1.radius - ball2.radius){
         return false;
     }
-    var dpUnit = new Vector(dispt.x, dispt.y);
+    
+    dpUnit.x = dispt.x;
+    dpUnit.y = dispt.y;
     dpUnit.normalize();
     
-    var d = (ball1.location.x - ball2.location.x) * dpUnit.x + (ball1.location.y - ball2.location.y) * dpUnit.y; //dpUnit.dot(shortestLength);
-    var f = (sL*sL) - (d * d);
-    var radiiSquared = Math.pow(ball1.radius + ball2.radius,2);
+    d = (ball1.location.x - ball2.location.x) * dpUnit.x + (ball1.location.y - ball2.location.y) * dpUnit.y; //dpUnit.dot(shortestLength);
+    f = (sL*sL) - (d * d);
+    radiiSquared = Math.pow(ball1.radius + ball2.radius,2);
     if (f>= radiiSquared){
         return false;
     }
     
-    var distance= d - Math.sqrt(radiiSquared - f);
+    distance= d - Math.sqrt(radiiSquared - f);
     if(dispt.mag() < distance){
         return false;
     }
     //collision!
-    var collisionTime = distance/ dispt.mag();
+    collisionTime = distance/ dispt.mag();
     disp1.mult(-collisionTime);
     disp2.mult(-collisionTime);
     
     ball1.location.add(disp1);
     ball2.location.add(disp2);
     
-    var n = VECTOR.sub(ball1.location, ball2.location);
+    n = VECTOR.sub(ball1.location, ball2.location);
+    n.x = ball1.location.x - ball2.location.x;
+    n.y = ball1.location.y - ball2.location.y;
     n.normalize();
     
-    var a1 = n.dot(ball1.velocity);
-    var a2= n.dot(ball2. velocity);
+    a1 = n.dot(ball1.velocity);
+    a2= n.dot(ball2.velocity);
     
-    var optimizedP = Math.abs((2.0 * (a1 - a2))/ (ball1.mass +ball2.mass));
+    optimizedP = Math.abs((2.0 * (a1 - a2))/ (ball1.mass + ball2.mass));
     
-    var vA1 = VECTOR.add(ball1.velocity, VECTOR.mult(n, ball2.mass * optimizedP));
-    var vA2 = VECTOR.sub(ball2.velocity, VECTOR.mult(n, ball1.mass * optimizedP));
+    
+    
+    vA1 = VECTOR.add(ball1.velocity, VECTOR.mult(n, ball2.mass * optimizedP));
+    vA2 = VECTOR.sub(ball2.velocity, VECTOR.mult(n, ball1.mass * optimizedP));
     
     ball1.velocity = vA1;
     ball2.velocity = vA2;
