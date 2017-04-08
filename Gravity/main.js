@@ -9,7 +9,7 @@ Physics.Balls.push(moon);
         
 
 Visual.setScale(1.2e6);
-window.setTimeout(refreshAll, 1000/60); 
+window.setTimeout(refreshAll, 1000/15); 
         
 var f = function f(){
   
@@ -20,4 +20,4 @@ var f = function f(){
     animate(f);
 }
         
-animate(f);
+// animate(f);

@@ -5,7 +5,7 @@
      <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </head>
-<body>
+<body onload="animate(f)">
     
     <canvas id="canvasOverLay" style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
     <canvas id="canvasSimulation" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
@@ -15,9 +15,9 @@
     <script src='physics.js'></script> 
     <script src='visual.js'></script>
     <script src='input.js'></script> 
-    <script src='main.js'></script> 
     <script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/e9d941381475b5df8b7d7691013401e171014e89/FileSaver.min.js"></script> 
     <script src='saving.js'></script> 
+    <script src='main.js'></script> 
     <div id='menu'>
     <p id='title'>Global Options</p>
         <div>
