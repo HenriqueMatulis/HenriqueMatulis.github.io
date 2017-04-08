@@ -111,7 +111,7 @@ Visual = (function(){
         
         //draw outline
         var pos = CONVERTTOREL(ball.location);
-        var rad = ball.radius / SCALE
+        var rad = Math.max(ball.radius / SCALE, 1)
         OVERLAY.arc(pos.x, pos.y, rad, 0, 2*Math.PI);
         
         //draw velocity vector
@@ -159,7 +159,7 @@ Visual = (function(){
         CONTEXT.beginPath();
         
         var pos = CONVERTTOREL(ball.location);
-        CONTEXT.arc(pos.x, pos.y, ball.radius / SCALE, 0, 2*Math.PI);
+        CONTEXT.arc(pos.x, pos.y, Math.max(ball.radius / SCALE, 1), 0, 2*Math.PI);
         CONTEXT.fill();
         
     };
