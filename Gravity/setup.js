@@ -24,3 +24,8 @@ var context = canvas.getContext("2d");
 context.font = "16px Arial";
 context.fillStyle = "rgb(0,0,0)";
 context.fillRect(0,0,canvas.width, canvas.height);
+
+        
+var timeScale = 20;
+var timeStep = 50;
+var frames = 0;

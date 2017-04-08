@@ -7,10 +7,6 @@ var moon = new Physics.Ball(3.844e8, 0, 1.737e6, 7.34767309e22);
 moon.velocity.y =1.023e3;
 Physics.Balls.push(moon);
         
-        
-var timeScale = 20;
-var timeStep = 50;
-var frames = 0;
 
 Visual.setScale(1.2e6);
 window.setTimeout(refreshAll, 1000/60); 
