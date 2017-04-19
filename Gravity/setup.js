@@ -26,5 +26,5 @@ context.fillStyle = "rgb(0,0,0)";
 context.fillRect(0,0,canvas.width, canvas.height);
 
         
-var timeScale = 100;
-var timeStep = 100;
+var timeScale = 300;
+var timeStep = 30;
