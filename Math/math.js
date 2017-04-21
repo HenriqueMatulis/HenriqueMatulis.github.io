@@ -2,6 +2,9 @@
 
 
 function createAdd(result, operations){
+    /**
+    Asssumes result > operations
+    **/
     "use strict";
     if (!operations || operations <= 0){
         return [result];
@@ -11,15 +14,16 @@ function createAdd(result, operations){
         return [0, 0];
     }
     
-    var aOps = Math.floor(Math.random() * (operations));
-    var bOps = (operations - aOps);
-    var diff = result - bOps;
+    var leftOps = Math.floor((operations - 1) / 2 ) ;
+    var rightOps = (operations - 1 - leftOps);
     
-    var a = 1 + aOps + Math.floor(Math.random() * (diff - 1 - aOps));
-    var b = result - a;
-    var c = createAdd(a, aOps);
-    var d = createAdd(b, bOps - 1);
-    return  c.concat(d);
+    var random = Math.round(Math.random() * result);
+    var rightValue = Math.max( Math.min(random, result - leftOps - 1), rightOps + 1);
+    var leftValue = result - rightValue;
+    
+    var left = createAdd(leftValue, leftOps);
+    var right = createAdd(rightValue, rightOps);
+    return  left.concat(right);
 }
 
 function format_add(strs, strict){
@@ -47,7 +51,7 @@ var start = new Date().getTime();
 
 function makeProblem(result){
     "use strict";
-    var nums = createAdd(result, Math.round(1 + Math.random() * 2));
+    var nums = createAdd(result, 2);
     return format_add(nums, false);
     
     
@@ -61,7 +65,7 @@ var yieldAnswer = function(equation, result){
 var newProblem = function(){
 	"use strict";
 	start = new Date().getTime();
-    var result = Math.max(Math.round(Math.random() * 101), 4);
+    var result = Math.max(Math.round(Math.random() * 101), 6);
 	var equation = makeProblem(result);
     new_.innerHTML = "<p>" + (equation + " = ???")+ "</p>";
     setTimeout(function() {
@@ -93,7 +97,7 @@ window.onload = function() {
 	old = document.getElementById('old');
 	timer = document.getElementById('timer');
     
-    timeLimit = 6 * 1000;
+    timeLimit = 1000 * 5;
 	
 	newProblem();
 	setInterval(refreshTimer, 100);
