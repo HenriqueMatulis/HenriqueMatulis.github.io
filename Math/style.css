@@ -1,109 +1,67 @@
 #old{
     text-align: right;
-    color: rgb(0, 118, 0);
     top:2em;
     right:1em;
     
 }
 
-#bufferToOld{
 
-    text-align: center;
-    color: rgb(0, 255, 0);
-	
-	position: absolute;
-	
-    top:2em;
-	left:50%
-	
-    -webkit-animation-name: bufferToOld; /* Safari 4.0 - 8.0 */
-    -webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
-    -webkit-animation-iteration-count: infinite; /* Safari 4.0 - 8.0 */
-    animation-name: bufferToOld;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-
-}
-
-#bufferToNew{
-
-    text-align: center;
-    color: rgb(0, 255, 0);
-    top:0em;
-	left:0%;
-    width:100%;'
-	
-    -webkit-animation-name: bufferToNew; /* Safari 4.0 - 8.0 */
-    -webkit-animation-duration: 1s; /* Safari 4.0 - 8.0 */
-    -webkit-animation-iteration-count: infinite; /* Safari 4.0 - 8.0 */
-    animation-name: bufferToNew;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-
-}
-
-/* Safari 4.0 - 8.0 */
-@-webkit-keyframes bufferToNew {
-    0%   {left:0px; top:0px;}
-    100% {left:0px; top:2em;}
-}
-
-/* Standard syntax */
-@keyframes bufferToNew {
-    0%   {left:0px; top:0px;}
-    100% {left:0px; top:2em;}
-}
-
-/* Safari 4.0 - 8.0 */
-@-webkit-keyframes bufferToOld {
-    0%   {right:45%; top:2em;}
-    100% {right:0%; top:2em;}
-}
-
-/* Standard syntax */
-@keyframes bufferToOld {
-    0%   {right:45%; top:2em;}
-    100% {right:1em; top:2em;}
-}
 
 #new{
     text-align: center;
-    color: rgb(0, 255, 0);
-    top:2em;
     
     left:0%;
-    width:100%;
     
 }
 
 
-.math{
-    position:absolute; 
 
-    
-}
 
 #timer{
-    z-index: 1;
-    background: rgb(124, 124, 124);
-    width:100%;
-    height:2em; 
-    position:absolute;  
-    top:0%;
-    left:0%;
-    text-align: center;
+    text-align: left;
 	
 	font-size: 110%;
 	font-family:‘Arial Black’, Gadget, sans-serif;
     
 }
 
-body{
-    background: rgb(0,0,0);
-    overflow-x: hidden; 
-    overflow-y: hidden;
 
+
+html {
+    background: #e6e9e9;
+    background-image: linear-gradient(270deg, rgb(157, 227, 227), rgb(216, 221, 221));
 }
+
+#content {
+    background: #fff;
+    
+    margin: 0 auto;
+    padding: 0.5em 2em 2em;
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+    
+    width: 50em;
+    max-width: 50em;
+    min-height: 45em;
+    
+    color: #545454;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    
+}
+
+
+h2 {
+    margin-top: 1em;
+    padding-top: 1em;
+    color: #333;
+}
+
+
+
+
+
+
 
 
 

@@ -3,7 +3,7 @@
 
 function createAdd(result, operations){
     "use strict";
-    if (operations <= 0 || !operations){
+    if (!operations || operations <= 0){
         return [result];
     }
     
@@ -34,82 +34,46 @@ function format_add(strs, strict){
     
 }
 
-var equation = "";
-var result ;//= Math.floor(Math.random() * 1000) + 6;
-var i = 0;
-var dir = 1;
-var timeLimit = 1150;
-var animDuration = Math.min(timeLimit - 20, 750);
 
-var bufferToNew;
-var bufferToOld;
-
+// Global vars
+var timeLimit;
 var new_;
 var old;
-
 var timer;
-
 var start = new Date().getTime();
 
 
 
 
-function makeProblem(){
+function makeProblem(result){
     "use strict";
+    var nums = createAdd(result, Math.round(1 + Math.random() * 2));
+    return format_add(nums, false);
     
-    
-    result = (i+1) * 10;
-    
-    var nums = createAdd(result, i);
-    equation = format_add(nums, false);
-    
-    i+=dir;
-    
-    if(i >= 10){
-        dir = -dir;
-    }else if (i <=0){
-        dir = -dir;
-    }
     
 }
 
-
-var startBuffers = function(){
-	bufferToNew.innerHTML = '<p>'+ equation + " = ??? </p>";
-	bufferToOld.innerHTML = new_.innerHTML;
-	
-	document.body.appendChild(bufferToNew);
-	document.body.appendChild(bufferToOld);
-    
-}
-
-var clearBuffers = function(){
-	old.innerHTML = bufferToOld.innerHTML + old.innerHTML;
-	new_.innerHTML = bufferToNew.innerHTML;
-     if (old.innerHTML.length > 1500){
-		old.innerHTML = old.innerHTML.slice(0, 1000);
-     }
-	bufferToNew.remove();
-	bufferToOld.remove();
-}
-
-var clearNew = function(){
-	new_.innerHTML = "";
+var yieldAnswer = function(equation, result){
+    "use strict";
+    old.innerHTML = "<p>" + (equation + " = " + result)+ "</p>" + old.innerHTML;
 }
 
 var newProblem = function(){
 	"use strict";
 	start = new Date().getTime();
-	makeProblem();
-	startBuffers();
-	clearNew();
-	setTimeout(clearBuffers, animDuration);
+    var result = Math.max(Math.round(Math.random() * 101), 4);
+	var equation = makeProblem(result);
+    new_.innerHTML = "<p>" + (equation + " = ???")+ "</p>";
+    setTimeout(function() {
+    yieldAnswer(equation, result);
+}, timeLimit);
+    
 }
 
 var refreshTimer = function(){
 	"use strict";
 	var t = new Date().getTime();
-	timer.innerHTML = Math.round((timeLimit - t + start) / 100) / 10;
+	timer.innerHTML = "Timer: "+Math.round((timeLimit - t + start) / 100) / 10;
 	
 	
 }
@@ -123,19 +87,15 @@ var refreshTimer = function(){
 
 window.onload = function() {
    "use strict";
-    bufferToNew = document.getElementById('bufferToNew');
-	bufferToOld = document.getElementById('bufferToOld');
-	bufferToNew.style.animationDuration = animDuration/1000 + "s";
-	bufferToOld.style.animationDuration = animDuration/1000 + "s";
-	bufferToOld.remove();
-	bufferToNew.remove();
+
 
 	new_ = document.getElementById('new');
 	old = document.getElementById('old');
-	
 	timer = document.getElementById('timer');
+    
+    timeLimit = 6 * 1000;
 	
-	
+	newProblem();
 	setInterval(refreshTimer, 100);
 	setInterval(newProblem, timeLimit);
 };

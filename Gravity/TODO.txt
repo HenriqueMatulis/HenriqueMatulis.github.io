@@ -1,0 +1,16 @@
+Goals
+
+- Screenshot feature
+- Tutorial
+- Display of nice screenshots / demo
+- Property picker
+	-Make UI better
+	-Allow users to change colors
+	-Make controls more intuitive
+- Make copy method copy everything, make it in the balls class maybe?
+-Add a luminosity feature, render shadows
+-Add temperature
+-Make masses not point masses
+-Make colision break up things
+-Add different states (solid, liquid, gas)
+- give program an image, it gives you a simualtion
