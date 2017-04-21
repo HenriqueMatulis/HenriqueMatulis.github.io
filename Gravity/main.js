@@ -21,7 +21,7 @@ Physics.Balls.push(moon);
 
 
 
-var sun = new Physics.Ball(0, 0, 6.957e8, 1.989e30, r=255, g=69, b=0)
+var sun = new Physics.Ball(0, 0, 6.957e8, 1.989e30, r=255, g=255, b=140)
 Physics.Balls.push(sun);
         
 

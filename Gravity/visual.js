@@ -156,8 +156,10 @@ Visual = (function(){
         
         //draw ball
         CONTEXT.fillStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
-        CONTEXT.beginPath();
+        CONTEXT.shadowBlur = 20;
+        CONTEXT.shadowColor = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
         
+        CONTEXT.beginPath();
         var pos = CONVERTTOREL(ball.location);
         CONTEXT.arc(pos.x, pos.y, Math.max(ball.radius / SCALE, 1), 0, 2*Math.PI);
         CONTEXT.fill();

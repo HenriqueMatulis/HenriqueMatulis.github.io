@@ -383,7 +383,7 @@ var copy = function copy(clicked){
         
         loc = VECTOR.sub(Physics.Balls[Visual.allSelected[i]].location, avrg);
         loc.add(Visual.convertToAbs(mouseLoc));
-        var temp = new Physics.Ball(loc.x , loc.y, Physics.Balls[Visual.allSelected[i]].radius, Physics.Balls[Visual.allSelected[i]].mass);
+        var temp = new Physics.Ball(loc.x , loc.y, Physics.Balls[Visual.allSelected[i]].radius, Physics.Balls[Visual.allSelected[i]].mass, Physics.Balls[Visual.allSelected[i]].red, Physics.Balls[Visual.allSelected[i]].green, Physics.Balls[Visual.allSelected[i]].blue);
         temp.velocity.x = Physics.Balls[Visual.allSelected[i]].velocity.x;
         temp.velocity.y = Physics.Balls[Visual.allSelected[i]].velocity.y;
         Physics.Balls.push(temp);
