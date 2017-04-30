@@ -30,6 +30,7 @@ Visual = (function(){
     
     
     var DRAWX = function(loc, radius){
+        radius = radius + 5;
         OVERLAY.setLineDash([]);
         OVERLAY.strokeStyle = "rgb(255, 0, 0)";
         OVERLAY.lineWidth = 5;
@@ -73,14 +74,28 @@ Visual = (function(){
         
         
         
-        var tip = VECTOR.add(origin, vec);
+        var copy = new Vector(vec.x, vec.y);
+        
+        if (Math.abs(copy.x) > CANVAS.width){
+            var divisor = Math.abs(copy.x) / CANVAS.width;
+            copy.div(divisor);
+        }
+        
+        if (Math.abs(copy.y) > CANVAS.height){
+            var divisor = Math.abs(copy.y) / CANVAS.height;
+            copy.div(divisor);
+        }
+        
+        
+        var tip = VECTOR.add(copy, origin);
+        
+        
         
         //line from origin to tip of vector
         OVERLAY.moveTo(origin.x, origin.y);
         OVERLAY.lineTo(tip.x, tip.y);
         
         
-        var copy = new Vector(vec.x, vec.y);
         copy.mult(0.1);
         
         //line from where tip of arrow to down-left
@@ -153,15 +168,39 @@ Visual = (function(){
             SELECT(ball, timeSpan);
         }
         
+        var radius = Math.max(ball.radius / SCALE, 1);
+        var oldLoc = CONVERTTOREL(ball.lastLocation);
+        var difference = VECTOR.sub(ball.location, ball.lastLocation);
+        difference.div(SCALE);
+        var newLoc = VECTOR.add(oldLoc, difference);
+        
+        
+        var control = VECTOR.mult(ball.lastVelocity, (difference.mag() / ball.lastVelocity.mag()) / 2);
+        control.add(oldLoc);
+        
+        if(!Physics.pause()){
+            ball.lastVelocity.x = ball.velocity.x;
+            ball.lastVelocity.y = ball.velocity.y;
+
+            ball.lastLocation.x = ball.location.x;
+            ball.lastLocation.y = ball.location.y;
+        }
+        
+        
         
         //draw ball
         CONTEXT.fillStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
-        CONTEXT.shadowBlur = 20;
-        CONTEXT.shadowColor = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
+        CONTEXT.strokeStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
+        CONTEXT.lineWidth = radius * 2 + 1;
         
         CONTEXT.beginPath();
-        var pos = CONVERTTOREL(ball.location);
-        CONTEXT.arc(pos.x, pos.y, Math.max(ball.radius / SCALE, 1), 0, 2*Math.PI);
+        CONTEXT.moveTo(oldLoc.x, oldLoc.y);
+        CONTEXT.quadraticCurveTo(control.x, control.y, newLoc.x, newLoc.y);
+        CONTEXT.stroke();
+        
+        
+        CONTEXT.beginPath();
+        CONTEXT.arc(newLoc.x, newLoc.y, radius, 0, 2*Math.PI);
         CONTEXT.fill();
         
     };

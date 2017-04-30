@@ -20,6 +20,34 @@ moon.velocity.y = 1.023e3;
 Physics.Balls.push(moon);
 
 
+var mars = new Physics.Ball(0, 227.9e9, 3.396e6, 0.642e24, r=255, g=0, b=0);
+mars.velocity.x = 24.1e3;
+Physics.Balls.push(mars);
+
+
+var jupiter = new Physics.Ball(0, 778.6e9, 71.492e6, 1898e24, r=200, g=147, b=77);
+jupiter.velocity.x = 13.1e3;
+Physics.Balls.push(jupiter);
+
+
+
+var saturn = new Physics.Ball(0, 1433.5e9, 60.268e6, 568e24, r=200, g=147, b=77);
+saturn.velocity.x = 9.7e3;
+Physics.Balls.push(saturn);
+
+
+
+var uranus = new Physics.Ball(0, 2872.5e9, 25.559e6, 86.8e24, r=202, g=240, b=241);
+uranus.velocity.x = 6.8e3;
+Physics.Balls.push(uranus);
+
+
+
+var neptune = new Physics.Ball(0, 4495.1e9, 24.764e6, 102e24, r=72, g=114, b=255);
+neptune.velocity.x = 5.4e3;
+Physics.Balls.push(neptune);
+
+
 
 var sun = new Physics.Ball(0, 0, 6.957e8, 1.989e30, r=255, g=255, b=140)
 Physics.Balls.push(sun);

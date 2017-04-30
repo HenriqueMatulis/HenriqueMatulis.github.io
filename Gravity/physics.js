@@ -3,6 +3,8 @@ Physics = (function(){
 //Ball class contains data for all physics objects
 BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
     this.location = new Vector(x, y);
+    this.lastLocation = new Vector(x,y);
+    this.lastVelocity = new Vector(0,0);
     this.velocity = new Vector(0, 0);
     this.acceleration = new Vector(0, 0);
     //force vector is reset every frame, can't use it to accelerate an object
@@ -245,6 +247,10 @@ var TOGGLEPAUSE = function togglePause(){
     PAUSE = !PAUSE;
 }   
 
+var GETPAUSE = function getPause(){
+    return PAUSE;
+} 
+
 RUN = function run(timeScale, timeStep){
     if(PAUSE){
         return;
@@ -265,6 +271,7 @@ return {
     update: UPDATE,
     run: RUN,
     setPause: SETPAUSE,
+    pause: GETPAUSE,
     togglePause: TOGGLEPAUSE
 };
 }());
