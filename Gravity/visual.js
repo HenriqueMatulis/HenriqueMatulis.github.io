@@ -8,6 +8,7 @@ Visual = (function(){
     var CONTEXT = CANVAS.getContext("2d");
     var SCALE = 1;
     var CAMERALOCK = -1;
+    var LAST_FOCUS = null;
     var FOCUS = new Vector();
     var ALLSELECTED = [];
     var MOVE = new Vector();
@@ -145,73 +146,58 @@ Visual = (function(){
         DRAWVECTOR(VECTOR.mult(ball.acceleration, timeSpan * timeSpan * 3600 / SCALE), origin);
         OVERLAY.stroke();
         
-        /**
-        OVERLAY.beginPath();
-        OVERLAY.fillStyle = "rgb(255, 255, 255)";
-        OVERLAY.lineWidth = 3;
-        OVERLAY.setLineDash([]);
-        
-        OVERLAY.rect(pos.x - 10 * rad, pos.y - 10, -150, 100);
-        OVERLAY.stroke();
-        OVERLAY.fill();
-        
-        //OVERLAY.fillText(ball.velocity.x.toFixed(3) + ", "+ball.velocity.y.toFixed(3), pos.x + ball.radius / SCALE, pos.y - ball.radius / SCALE);
-        **/
-        
-        
     };
     
-    
+    function getFocus(ballLock, step, length){
+        if (CAMERALOCK >= 0){
+            return ballLock.locationHistory[step];
+        }else {
+            let alpha = (step+1)/length;
+            let beta = 1 - alpha;
+            return new Vector(
+                alpha * LAST_FOCUS.x + beta * FOCUS.x,
+                alpha * LAST_FOCUS.y + beta * FOCUS.y,
+            );
+        }
+
+    }
 //render one ball
-    function render(ball, timeSpan, isSelected) {
+    function render(ball, timeSpan, isSelected, ballLock) {
         if(isSelected){
             SELECT(ball, timeSpan);
         }
         
         var radius = Math.max(ball.radius / SCALE, 1);
-        var oldLoc = CONVERTTOREL(ball.lastLocation);
-        var difference = VECTOR.sub(ball.location, ball.lastLocation);
-        difference.div(SCALE);
-        var newLoc = VECTOR.add(oldLoc, difference);
-        
-        
-        var control = VECTOR.mult(ball.lastVelocity, (difference.mag() / ball.lastVelocity.mag()) / 2);
-        control.add(oldLoc);
-        
-        if(!Physics.pause()){
-            ball.lastVelocity.x = ball.velocity.x;
-            ball.lastVelocity.y = ball.velocity.y;
-
-            ball.lastLocation.x = ball.location.x;
-            ball.lastLocation.y = ball.location.y;
-        }
-        
-        
         
         //draw ball
-        CONTEXT.fillStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
         CONTEXT.strokeStyle = "rgba("+ball.red+","+ball.green+","+ball.blue+","+parseFloat(document.getElementById('opacity').value)+")";
         CONTEXT.lineWidth = radius * 2 + 1;
-        
+
         CONTEXT.beginPath();
-        CONTEXT.moveTo(oldLoc.x, oldLoc.y);
-        CONTEXT.quadraticCurveTo(control.x, control.y, newLoc.x, newLoc.y);
+        CONTEXT.lineCap = "round";
+        let length = ball.locationHistory.length;
+        let loc = CONVERTTORELFORFOCUS(ball.locationHistory[0], getFocus(ballLock, 0, length));
+        CONTEXT.moveTo(loc.x, loc.y);
+        for (let i=1; i< ball.locationHistory.length; i++){
+            loc = CONVERTTORELFORFOCUS(ball.locationHistory[i], getFocus(ballLock, i, length));
+            CONTEXT.lineTo(loc.x, loc.y);
+        }
         CONTEXT.stroke();
         
-        
-        CONTEXT.beginPath();
-        CONTEXT.arc(newLoc.x, newLoc.y, radius, 0, 2*Math.PI);
-        CONTEXT.fill();
         
     };
     
     var RENDERALL = function renderAll(balls, timeSpan) {
+        let ballLock = undefined;
         if(CAMERALOCK >= 0){
-            FOCUS.x = balls[CAMERALOCK].location.x;
-            FOCUS.y = balls[CAMERALOCK].location.y;
+            ballLock = balls[CAMERALOCK]
+            FOCUS.x = ballLock.location.x;
+            FOCUS.y = ballLock.location.y;
         }else{
             FOCUS.add(VECTOR.mult(MOVE, SCALE));
-            
+        }
+        if (LAST_FOCUS === null) {
+            LAST_FOCUS = new Vector(FOCUS.x, FOCUS.y)
         }
         
         CONTEXT.fillStyle = "rgba(0,0,0,"+ (document.getElementById('reset').checked ? 0 : 1) +")";
@@ -221,8 +207,10 @@ Visual = (function(){
         
         var i;
         for(i = 0; i < balls.length; i += 1){
-            render(balls[i], timeSpan, ALLSELECTED.indexOf(i) != -1);
+            render(balls[i], timeSpan, ALLSELECTED.indexOf(i) != -1, ballLock);
         }
+        LAST_FOCUS.x = FOCUS.x;
+        LAST_FOCUS.y = FOCUS.y;
     };
     
     
@@ -234,12 +222,17 @@ Visual = (function(){
         return l;
     }
 
+    //convert from absolute to relative co-ordinate system
+    var CONVERTTORELFORFOCUS = function convertToRel(loc, focus){
+        "use strict";
+        var l = new Vector(CANVAS.width/2 + (loc.x - focus.x)/SCALE, CANVAS.height/2 + (loc.y - focus.y)/SCALE);
+        return l;
+    }
     
     //convert from absolute to relative co-ordinate system
     var CONVERTTOREL = function convertToRel(loc){
         "use strict";
-        var l = new Vector(CANVAS.width/2 + (loc.x - FOCUS.x)/SCALE, CANVAS.height/2 + (loc.y - FOCUS.y)/SCALE);
-        return l;
+        return CONVERTTORELFORFOCUS(loc, FOCUS);
     }
     
     

@@ -326,12 +326,17 @@ var lock = function lock(clicked){
 };
 
 var createDraw = function createDraw(){
-    Visual.drawCircle(mouseLoc, 15 + 2);
+    Visual.drawCircle(mouseLoc, 3);
 }
 
 var create = function create(clicked){
     var mouseAbs = Visual.convertToAbs(mouseLoc);
-    Physics.Balls.push(new Physics.Ball(mouseAbs.x , mouseAbs.y, Visual.getScale() * 15, 1));
+    let ball = new Physics.Ball(mouseAbs.x , mouseAbs.y, 1.737e5, 1);
+    let cameraId = Visual.getCamera();
+    if (cameraId >= 0){
+        ball.velocity.copy(Physics.Balls[cameraId].velocity)
+    }
+    Physics.Balls.push(ball);
     
 };
 

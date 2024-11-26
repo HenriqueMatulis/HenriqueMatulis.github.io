@@ -3,8 +3,7 @@ Physics = (function(){
 //Ball class contains data for all physics objects
 BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
     this.location = new Vector(x, y);
-    this.lastLocation = new Vector(x,y);
-    this.lastVelocity = new Vector(0,0);
+    this.locationHistory = new Array(timeStep+1).fill(0).map(() => new Vector(x, y));
     this.velocity = new Vector(0, 0);
     this.acceleration = new Vector(0, 0);
     //force vector is reset every frame, can't use it to accelerate an object
@@ -19,7 +18,9 @@ BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
     
     
     //update the balls location
-    this.update= function(timeScale){
+    this.update= function(timeScale, step){
+        this.locationHistory[step].copy(this.location);
+
         this.acceleration.x = this.force.x / this.mass;
         this.acceleration.y = this.force.y / this.mass;
         
@@ -30,6 +31,7 @@ BALL = function Ball(x, y, radius, mass, r = 255, g = 255, b = 255) {
         
         this.velocity.x += this.acceleration.x * timeScale;
         this.velocity.y += this.acceleration.y * timeScale;
+        this.locationHistory[step+1].copy(this.location);
     };
     
 }
@@ -52,7 +54,7 @@ GRAVITY = function gravity(ball1, ball2){
     
     //apply forces
     ball1.force.sub(diff);
-    ball2.force.add(diff);
+    // ball2.force.add(diff);
 }
 
 
@@ -137,7 +139,7 @@ COLLISION = function collision(ball1, ball2, timeStep){
     disp2.mult(-collisionTime);
     
     ball1.location.add(disp1);
-    ball2.location.add(disp2);
+    // ball2.location.add(disp2);
     
     n = VECTOR.sub(ball1.location, ball2.location);
     n.x = ball1.location.x - ball2.location.x;
@@ -155,7 +157,7 @@ COLLISION = function collision(ball1, ball2, timeStep){
     vA2 = VECTOR.sub(ball2.velocity, VECTOR.mult(n, ball1.mass * optimizedP));
     
     ball1.velocity = vA1;
-    ball2.velocity = vA2;
+    // ball2.velocity = vA2;
     
     return true;
     
@@ -223,15 +225,28 @@ FINDBALLRECT = function findBallsInRect(corner1, corner2){
     
 }
 
-UPDATE = function update(timeScale){
+var LAST_STEP = timeStep;
+INIT_LOCATION_HISTORY = function initHistory(steps){
+    if (steps === LAST_STEP){
+        return;
+    }
+    for(i = 0; i < BALLS.length; i += 1){
+        BALLS[i].locationHistory = new Array(steps+1).fill(0).map(() => new Vector());
+    }
+    LAST_STEP = steps;
+};
+
+UPDATE = function update(timeScale, step){
     var i;
     for(i = 0; i < BALLS.length; i += 1){
         var j;
-        for(j = i + 1 ; j < BALLS.length; j += 1){
-            GRAVITY(BALLS[i], BALLS[j]);
-            COLLISION(BALLS[i], BALLS[j], timeScale);
+        for(j = 0 ; j < Math.min(BALLS.length, 10); j += 1){
+            if (i != j){
+                GRAVITY(BALLS[i], BALLS[j]);
+                COLLISION(BALLS[i], BALLS[j], timeScale);
+            }
         }
-        BALLS[i].update(timeScale);
+        BALLS[i].update(timeScale, step);
     }
 }
 
@@ -255,9 +270,11 @@ RUN = function run(timeScale, timeStep){
     if(PAUSE){
         return;
     }
+
+    INIT_LOCATION_HISTORY(timeStep);
     var i;
     for(i = 0; i < timeStep; i += 1){
-        UPDATE(timeScale);
+        UPDATE(timeScale, i);
     }
 }
 
